@@ -1,0 +1,68 @@
+<div class="flex flex-col items-center min-h-screen bg-gray-100 py-10 ">
+
+  <div class="flex justify-center mb-6">
+    <div class="inline-flex bg-gray-200 rounded-full p-1">
+      <button 
+        (click)="selectedRole = 'doctor'"
+        [ngClass]="{
+          'bg-blue-500 text-white': selectedRole === 'doctor',
+          'text-black': selectedRole !== 'doctor'
+        }"
+        class="px-5 py-2 text-sm font-semibold rounded-full transition-colors duration-300"
+      >
+        DOCTOR
+      </button>
+      <button 
+        (click)="selectedRole = 'patient'"
+        [ngClass]="{
+          'bg-blue-500 text-white': selectedRole === 'patient',
+          'text-black': selectedRole !== 'patient'
+        }"
+        class="px-5 py-2 text-sm font-semibold rounded-full transition-colors duration-300"
+      >
+        PATIENT
+      </button>
+    </div>
+  </div>
+  
+  <div  class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-center text-black text-2xl font-semibold mb-4">Sign Up</h2>
+    <form *ngIf="selectedRole=='patient'" [formGroup]="patientRegisterForm" (ngSubmit)="onSubmitDoctor()" class="flex flex-col gap-3">
+      <div *ngIf="error" class="text-red-500">{{ error }}</div>
+
+      <input type="text" formControlName="firstName" placeholder="First Name" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="text" formControlName="lastName" placeholder="Last Name" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="email" formControlName="email" placeholder="Email" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="password" formControlName="password" placeholder="Password" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="tel" formControlName="phoneNumber" placeholder="Phone Number" class="p-2 border text-black rounded-md border-gray-300" />
+
+      <button type="submit" class="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+        Sign Up
+      </button>
+    </form>
+
+    <form *ngIf="selectedRole=='doctor'" [formGroup]="doctorRegisterForm" (ngSubmit)="onSubmitDoctor()" class="flex flex-col gap-3">
+      <div *ngIf="error" class="text-red-500">{{ error }}</div>
+
+      <input type="text" formControlName="firstName" placeholder="First Name" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="text" formControlName="lastName" placeholder="Last Name" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="email" formControlName="email" placeholder="Email" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="password" formControlName="password" placeholder="Password" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="tel" formControlName="phoneNumber" placeholder="Phone Number" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="text" formControlName="licenseNumber" placeholder="License Number" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="text" formControlName="speciality" placeholder="Speciality" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="text" formControlName="address" placeholder="Address" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="text" formControlName="city" placeholder="City" class="p-2 border text-black rounded-md border-gray-300" />
+      <input type="text" formControlName="zipCode" placeholder="Zip Code" class="p-2 border text-black rounded-md border-gray-300" />
+
+      <button type="submit" class="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+        Sign Up
+      </button>
+    </form>
+
+    <p class="text-center text-gray-400 text-sm mt-4">
+      Already have an account?
+      <a (click)="navigateToLogin()" class="text-blue-600 cursor-pointer hover:underline">Login</a>
+    </p>
+  </div>
+</div>

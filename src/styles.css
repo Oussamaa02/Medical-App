@@ -1,1 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.input {
+    @apply w-1/2 px-4 py-2 border flex  border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-400 transition;
+  }
+

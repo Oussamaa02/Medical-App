@@ -1,0 +1,53 @@
+<div class="flex flex-col-reverse lg:flex-row  max-w-7xl mx-auto ">
+  <div class="w-full  ">
+    <full-calendar [options]="calendarOptions"></full-calendar>
+  </div>
+  
+  <!-- Time slots -->
+  <div 
+    *ngIf="selectedDate"
+    class="w-full max-w-md mx-auto mt-4 bg-white p-4 rounded-lg shadow"
+  >
+    <h2 class="text-md font-semibold mb-3">
+      Available Times on <span class="text-blue-600">{{ selectedDate }}</span>
+    </h2>
+    
+    <div class="grid grid-cols-3 gap-2">
+      <button
+        *ngFor="let time of availableTimeSlots"
+        (click)="selectTime(time)"
+        [class]="'text-sm px-3 py-1 rounded border transition ' + 
+                 (isTimeSelected(time) ? 'bg-blue-600 text-white' : 'hover:bg-blue-100') + 
+                 (isTimeBooked(time) ? ' bg-gray-200 border-gray-200 text-gray-400 cursor-not-allowed' : '')"
+        [disabled]="isTimeBooked(time)"
+      >
+        {{ time }}
+      </button>
+    </div>
+  
+    <div class="mt-4 text-center flex justify-center gap-3">
+      <button
+        [disabled]="!selectedTime"
+        (click)="handleConfirm()"
+        [class]="'px-4 py-2 rounded text-white text-sm transition ' + 
+                 (selectedTime ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed')"
+      >
+        Confirm
+      </button>
+  
+      <button
+        (click)="handleCancel()"
+        class="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+  
+  <!-- Smart Assessment -->
+  <app-smart-assessment 
+    *ngIf="showSmartAssessment"
+    (cancelEvent)="showSmartAssessment = false"
+  ></app-smart-assessment>
+
+</div>

@@ -1,0 +1,14 @@
+.navbar-logo {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .navbar-logo:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Mobile responsive adjustments */
+  @media (max-width: 768px) {
+    .navbar-brand {
+      font-size: 1.2rem;
+    }
+  }

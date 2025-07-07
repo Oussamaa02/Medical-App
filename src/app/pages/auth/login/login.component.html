@@ -1,0 +1,20 @@
+<div class="flex flex-col items-center min-h-screen bg-gray-100 py-24 ">
+  <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-center text-black text-2xl font-semibold mb-4">Login</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-3">
+      <div *ngIf="error" class="text-red-500">{{ error }}</div>
+
+      <input  type="email" formControlName="email" placeholder="Email" class="p-2 border text-black rounded-md border-gray-300" />
+      <input  type="password" formControlName="password" placeholder="Password" class="p-2 border text-black rounded-md border-gray-300" />
+
+      <button type="submit" class="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+        Login
+      </button>
+    </form>
+
+    <p class="text-center text-gray-400 text-sm mt-4">
+      Don’t have an account?
+      <a (click)="navigateToSignup()" class="text-blue-600 cursor-pointer hover:underline">Sign Up</a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+/* app/styles/calendar.css */
+.fc {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px !important; /* ↓ Font size */
+  }
+  
+  .fc-daygrid-day-frame {
+    padding: px !important; /* ↓ Cell padding */
+  }
+  
+  .fc .fc-daygrid-event {
+    font-size: 11px !important;
+    padding: 0 2px !important;
+    margin: 1px 0 !important;
+    line-height: 1.1 !important;
+  }
+  
+  .fc .fc-toolbar-title {
+    font-size: 1rem !important; /* ↓ Month title font */
+  }
+  
+  .fc .fc-button {
+    font-size: 0.75rem !important;
+    padding: 2px 6px !important;
+  }
+  
