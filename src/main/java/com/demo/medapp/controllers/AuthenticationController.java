@@ -16,7 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "http://http://localhost:3000",allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:4200",allowCredentials = "true")
 public class AuthenticationController {
 
     private final AuthenticationService service;
@@ -52,6 +52,14 @@ public class AuthenticationController {
     public ResponseEntity<?> logout(HttpServletResponse response) {
         service.clearAuthCookie(response);
         return ResponseEntity.ok().body(Map.of("message", "Logout successful"));
+    }
+
+    @PostMapping("/refresh-token")
+    public void refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ){
+        service.refreshToken(request,response);
     }
 
     @GetMapping("/csrf-token")

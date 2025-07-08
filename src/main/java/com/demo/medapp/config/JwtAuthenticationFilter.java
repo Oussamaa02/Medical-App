@@ -9,8 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         // Get token from cookie
-        String jwt = getCookieValue(request, JWT_COOKIE_NAME)
+        String jwt = getCookieValue(request)
                 .orElse(null);
 
         if (jwt == null) {
@@ -75,33 +73,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                // Optionally refresh the cookie on each request
-                refreshCookieIfNeeded(request, response, jwt);
             }
         }
         filterChain.doFilter(request, response);
     }
 
-    private Optional<String> getCookieValue(HttpServletRequest request, String name) {
+    private Optional<String> getCookieValue(HttpServletRequest request) {
         if (request.getCookies() == null) {
             return Optional.empty();
         }
         return Arrays.stream(request.getCookies())
-                .filter(cookie -> name.equals(cookie.getName()))
+                .filter(cookie -> JwtAuthenticationFilter.JWT_COOKIE_NAME.equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst();
-    }
-
-    private void refreshCookieIfNeeded(HttpServletRequest request, HttpServletResponse response, String jwt) {
-        // Example: Refresh cookie if it's about to expire
-        // You can customize this logic based on your requirements
-        ResponseCookie cookie = ResponseCookie.from(JWT_COOKIE_NAME, jwt)
-                .httpOnly(true)
-                .secure(request.isSecure()) // Use secure in production
-                .path("/")
-                .maxAge(24 * 60 * 60) // 1 day
-                .sameSite("Lax")
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 }

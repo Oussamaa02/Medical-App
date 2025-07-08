@@ -1,9 +1,6 @@
 package com.demo.medapp.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
@@ -11,5 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class AuthenticationResponse {
-    private String token;
+    private String accessToken;
+    private String refreshToken;
 }

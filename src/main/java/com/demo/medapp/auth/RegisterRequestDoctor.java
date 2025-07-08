@@ -1,6 +1,5 @@
 package com.demo.medapp.auth;
 
-import com.demo.medapp.enums.Role;
 import lombok.*;
 
 @Getter
@@ -16,5 +15,7 @@ public class RegisterRequestDoctor {
     private String phoneNumber;
     private String email;
     private String password;
-
+    private String city;
+    private String address;
+    private String ZipCode;
 }
