@@ -13,6 +13,8 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { authenticate } from '../fn/authentication-controller/authenticate';
 import { Authenticate$Params } from '../fn/authentication-controller/authenticate';
+import { checkLoginStatus } from '../fn/authentication-controller/check-login-status';
+import { CheckLoginStatus$Params } from '../fn/authentication-controller/check-login-status';
 import { getCsrfToken } from '../fn/authentication-controller/get-csrf-token';
 import { GetCsrfToken$Params } from '../fn/authentication-controller/get-csrf-token';
 import { logout } from '../fn/authentication-controller/logout';
@@ -23,6 +25,8 @@ import { registerDoctor } from '../fn/authentication-controller/register-doctor'
 import { RegisterDoctor$Params } from '../fn/authentication-controller/register-doctor';
 import { registerPatient } from '../fn/authentication-controller/register-patient';
 import { RegisterPatient$Params } from '../fn/authentication-controller/register-patient';
+import { verify } from '../fn/authentication-controller/verify';
+import { Verify$Params } from '../fn/authentication-controller/verify';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationControllerService extends BaseService {
@@ -165,6 +169,64 @@ export class AuthenticationControllerService extends BaseService {
   authenticate(params: Authenticate$Params, context?: HttpContext): Observable<{
 }> {
     return this.authenticate$Response(params, context).pipe(
+      map((r: StrictHttpResponse<{
+}>): {
+} => r.body)
+    );
+  }
+
+  /** Path part for operation `verify()` */
+  static readonly VerifyPath = '/auth/verify';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `verify()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  verify$Response(params: Verify$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+}>> {
+    return verify(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `verify$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  verify(params: Verify$Params, context?: HttpContext): Observable<{
+}> {
+    return this.verify$Response(params, context).pipe(
+      map((r: StrictHttpResponse<{
+}>): {
+} => r.body)
+    );
+  }
+
+  /** Path part for operation `checkLoginStatus()` */
+  static readonly CheckLoginStatusPath = '/auth/status';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `checkLoginStatus()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  checkLoginStatus$Response(params?: CheckLoginStatus$Params, context?: HttpContext): Observable<StrictHttpResponse<{
+}>> {
+    return checkLoginStatus(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `checkLoginStatus$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  checkLoginStatus(params?: CheckLoginStatus$Params, context?: HttpContext): Observable<{
+}> {
+    return this.checkLoginStatus$Response(params, context).pipe(
       map((r: StrictHttpResponse<{
 }>): {
 } => r.body)

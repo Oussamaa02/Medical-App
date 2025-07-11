@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { Calendar } from 'lucide-angular';
 import { CalendarComponent } from '../../components/calendar/calendar.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
     standalone: true,
   selector: 'app-home',
   templateUrl: './home.component.html',
-  imports: [CalendarComponent],
-//   styleUrls: ['./home.component.css']
+  imports: [CalendarComponent,CommonModule],
 })
 export class HomeComponent {
   
@@ -18,4 +18,5 @@ export class HomeComponent {
   handleCancel(): void {
     console.log('Cancelled appointment');
   }
+
 }

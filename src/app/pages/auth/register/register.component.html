@@ -27,7 +27,7 @@
   
   <div  class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
     <h2 class="text-center text-black text-2xl font-semibold mb-4">Sign Up</h2>
-    <form *ngIf="selectedRole=='patient'" [formGroup]="patientRegisterForm" (ngSubmit)="onSubmitDoctor()" class="flex flex-col gap-3">
+    <form *ngIf="selectedRole=='patient'" [formGroup]="patientRegisterForm" (ngSubmit)="onSubmitPatient()" class="flex flex-col gap-3">
       <div *ngIf="error" class="text-red-500">{{ error }}</div>
 
       <input type="text" formControlName="firstName" placeholder="First Name" class="p-2 border text-black rounded-md border-gray-300" />

@@ -20,12 +20,12 @@ import { AuthenticationControllerService } from './services/services/authenticat
 import { RegisterComponent } from './pages/auth/register/register.component';
 import { LoginComponent } from './pages/auth/login/login.component';
 
-// Guards
-// import { AuthGuard } from './guards/auth.guard';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
+
 
 @NgModule({
   declarations: [
-
   ],
   imports: [
     RegisterComponent,
@@ -36,17 +36,22 @@ import { LoginComponent } from './pages/auth/login/login.component';
     // AppointmentsComponent,
     AppComponent,
     BrowserModule,
+    NavbarComponent,
     HttpClientModule,
     BrowserAnimationsModule,
     FullCalendarModule,
     LucideAngularModule.pick({ Brain, Clock }),
     ReactiveFormsModule,
-    NavbarComponent,
     HttpClientModule
   ],
   providers: [
     AuthenticationControllerService,
-    HttpClient
+    HttpClient,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
     // AppointmentService,
     // AuthGuard
   ],

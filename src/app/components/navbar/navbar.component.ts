@@ -1,56 +1,41 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, Observable, of, catchError } from 'rxjs';
 import { AuthenticationControllerService } from '../../services/services/authentication-controller.service';
-import { Observable } from 'rxjs';
-import { CommonModule } from '@angular/common'; // ✅ Import this
-
-
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/custom-services/auth.service';
 @Component({
-  selector: 'app-navbar',
   standalone: true,
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css'],
-    imports: [CommonModule] // ✅ Add CommonModule to imports
+  imports: [CommonModule],
+  selector: 'app-navbar',
+  templateUrl: './navbar.component.html'
 })
 export class NavbarComponent implements OnInit {
+  isLoggedIn$: Observable<boolean> = of(false);
   currentRoute: string = '';
-  isLoggedIn$: Observable<boolean>;
 
-  constructor(
-    private router: Router,
-    private authService: AuthenticationControllerService
-  ) {
-    this.isLoggedIn$ = this.authService.authenticate$Response({body: {}})
-  .pipe(map(response => !!response));
-    
-  }
+  constructor(private authServiceCheck: AuthService, private router: Router, private auth : AuthService) {}
 
   ngOnInit(): void {
-    this.router.events
-      .pipe(
-        filter((event): event is NavigationEnd => event instanceof NavigationEnd)
-      )
-      .subscribe((event) => {
-        this.currentRoute = event.urlAfterRedirects;
-      });
-  
+    this.isLoggedIn$ = this.authServiceCheck.checkLoginStatus();
     this.currentRoute = this.router.url;
   }
+    
 
+  onLogout(): void {
+    this.auth.logout().subscribe(() => {
+      window.location.reload(); // Full refresh to clear state
+    });
+  }
+  
   isActiveRoute(route: string): boolean {
     return this.currentRoute === route;
   }
 
-  getNavItemClass(route: string): string {
-    return this.isActiveRoute(route) 
-      ? 'text-blue-600 font-bold' 
+getNavItemClass(route: string): string {
+    return this.isActiveRoute(route)
+      ? 'text-blue-600 font-bold'
       : 'text-black hover:text-blue-600';
-  }
-
-  onLogout(): void {
-    this.authService.logout();
-    this.router.navigate(['/']);
   }
 
   navigateToLogin(): void {

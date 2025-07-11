@@ -46,7 +46,7 @@ export class RegisterComponent {
 
     const body = this.doctorRegisterForm.value;
 
-    this.authService.registerDoctor(body).subscribe({
+    this.authService.registerDoctor({body}).subscribe({
       next: () => this.router.navigate(['/login']),
       error: (err) => this.error = err.error?.message || 'Registration failed'
     });
@@ -57,7 +57,7 @@ export class RegisterComponent {
 
     const body = this.patientRegisterForm.value;
 
-    this.authService.registerPatient(body).subscribe({
+    this.authService.registerPatient({body}).subscribe({
       next: () => this.router.navigate(['/login']),
       error: (err) => this.error = err.error?.message || 'Registration failed'
     });

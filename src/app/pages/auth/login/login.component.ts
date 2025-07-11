@@ -4,20 +4,20 @@ import { AuthenticationControllerService } from '../../../services/services/auth
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthenticationRequest } from '../../../services/models/authentication-request';
+import { AuthService } from '../../../services/custom-services/auth.service';
 
 @Component({
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   loginForm: FormGroup;
   error: string | null = null;
 
 
-  constructor(private fb: FormBuilder, private authService: AuthenticationControllerService, private router: Router) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -27,14 +27,14 @@ export class LoginComponent {
   onSubmit(): void {
     if (this.loginForm.invalid) return;
   
-    const body = this.loginForm.value;
+    const body : {email :string, password: string} = this.loginForm.value;
   
-    this.authService.authenticate({ body }).subscribe({
-      next: () => this.router.navigate(['/']),
+    this.authService.login( body ).subscribe({
+      next: () => window.location.href = '/',
       error: (err) => this.error = err.error?.message || 'Login failed'
     });
+    
   }
-  
 
   navigateToSignup(): void {
     this.router.navigate(['/register']);
