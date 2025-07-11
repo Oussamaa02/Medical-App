@@ -1,4 +1,4 @@
-package com.demo.medapp.token;
+package com.demo.medapp.tokens;
 
 import com.demo.medapp.enums.TokenType;
 import com.demo.medapp.models.User;

@@ -9,29 +9,37 @@ import com.demo.medapp.mappers.LocationMapper;
 import com.demo.medapp.models.Doctor;
 import com.demo.medapp.models.Patient;
 import com.demo.medapp.models.User;
-import com.demo.medapp.repos.TokenRepository;
-import com.demo.medapp.repos.UserRepository;
-import com.demo.medapp.token.Token;
+import com.demo.medapp.repos.*;
+import com.demo.medapp.tokens.Token;
+import com.demo.medapp.tokens.VerificationToken;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
 
     private final TokenRepository tokenRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final EmailService emailService;
     private final UserRepository repository;
+
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
@@ -49,14 +57,30 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.PATIENT)
+                .isValidated(false)
                 .build();
 
         var savedUser = repository.save(user);
-        var accessToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(savedUser, accessToken);
-        setAuthCookie(response, accessToken);
-        setRefreshCookie(response, refreshToken);
+
+//        var accessToken = jwtService.generateToken(user);
+//        var refreshToken = jwtService.generateRefreshToken(user);
+//        saveUserToken(savedUser, accessToken);
+//        setAuthCookie(response, accessToken);
+//        setRefreshCookie(response, refreshToken);
+
+        String token = UUID.randomUUID().toString();
+        VerificationToken verificationToken = VerificationToken.builder()
+                .token(token)
+                .createdAt(LocalDateTime.now())
+                .userRole(Role.PATIENT)
+                .patient(user)
+                .build();
+
+        verificationTokenRepository.save(verificationToken);
+
+        emailService.sendVerificationEmail(user.getEmail(), token);
+
+
     }
 
     public void registerDoctor(RegisterRequestDoctor request, HttpServletResponse response) {
@@ -72,12 +96,66 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.DOCTOR)
+                .isValidated(false)
                 .build();
 
         var savedUser = repository.save(user);
+
+//        var accessToken = jwtService.generateToken(user);
+//        var refreshToken = jwtService.generateRefreshToken(user);
+//        saveUserToken(savedUser, accessToken);
+//        setAuthCookie(response, accessToken);
+//        setRefreshCookie(response, refreshToken);
+
+        String token = UUID.randomUUID().toString();
+        VerificationToken verificationToken = VerificationToken.builder()
+                .token(token)
+                .createdAt(LocalDateTime.now())
+                .userRole(Role.DOCTOR)
+                .doctor(user)
+                .build();
+
+        verificationTokenRepository.save(verificationToken);
+
+        emailService.sendVerificationEmail(user.getEmail(), token);
+
+
+    }
+
+    @Transactional
+    public void verifyAccount(String token, HttpServletResponse response) {
+        Optional<VerificationToken> optionalToken = verificationTokenRepository.findByToken(token);
+        if (optionalToken.isEmpty()) {
+            throw new IllegalArgumentException("Invalid or expired token");
+        }
+
+        VerificationToken verificationToken = optionalToken.get();
+        Doctor doctor = verificationToken.getDoctor();
+        Patient patient = verificationToken.getPatient();
+
+        if (verificationToken.getUserRole() == Role.DOCTOR && doctor != null) {
+            doctor.setValidated(true);
+            doctor.setVerificationToken(null);
+            repository.save(doctor);
+            generateAndSetTokens(doctor, response);
+        } else if (verificationToken.getUserRole() == Role.PATIENT && patient != null) {
+            patient.setValidated(true);
+            patient.setVerificationToken(null);
+            repository.save(patient);
+            generateAndSetTokens(patient, response);
+        } else {
+            throw new IllegalStateException("No valid user found for this token");
+        }
+
+        verificationTokenRepository.delete(verificationToken);
+    }
+
+    private void generateAndSetTokens(User user, HttpServletResponse response) {
         var accessToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(savedUser, accessToken);
+
+        revokeAllUserTokens(user);
+        saveUserToken(user, accessToken);
         setAuthCookie(response, accessToken);
         setRefreshCookie(response, refreshToken);
     }
@@ -91,15 +169,18 @@ public class AuthenticationService {
                 )
         );
         var user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        revokeAllUserTokens(user);
+        if (user instanceof Doctor && !((Doctor) user).isValidated()) {
+            throw new IllegalStateException("Doctor account is not yet verified.");
+        }
 
-        var accessToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(user, accessToken);
-        setAuthCookie(response, accessToken);
-        setRefreshCookie(response, refreshToken);
+        if (user instanceof Patient && !((Patient) user).isValidated()) {
+            throw new IllegalStateException("Patient account is not yet verified.");
+        }
+
+        generateAndSetTokens(user, response);
+
     }
 
     private void setAuthCookie(HttpServletResponse response, String jwtToken) {

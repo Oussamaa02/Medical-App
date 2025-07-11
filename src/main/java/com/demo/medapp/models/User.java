@@ -1,7 +1,7 @@
 package com.demo.medapp.models;
 
 import com.demo.medapp.enums.Role;
-import com.demo.medapp.token.Token;
+import com.demo.medapp.tokens.Token;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

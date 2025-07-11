@@ -1,6 +1,6 @@
 package com.demo.medapp.repos;
 
-import com.demo.medapp.token.Token;
+import com.demo.medapp.tokens.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

@@ -13,6 +13,19 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ammarioussama03@gmail.com
+    password: ucst opxq qozu zsgv
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
 
 application:
   security:
@@ -21,4 +34,6 @@ application:
       expiration: 86400000 # a day
       refresh-key:
         expiration: 604800000 # 7 days
+  mail:
+    url: http://localhost:8080/auth/verify?token=
 
