@@ -15,16 +15,19 @@ import com.demo.medapp.tokens.VerificationToken;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -48,6 +51,9 @@ public class AuthenticationService {
     private static final String JWT_COOKIE_NAME = "jwt";
 
     public void registerPatient(RegisterRequestPatient request, HttpServletResponse response) {
+        if (repository.existsByEmail(request.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
+        }
         var user = Patient.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -60,13 +66,8 @@ public class AuthenticationService {
                 .isValidated(false)
                 .build();
 
-        var savedUser = repository.save(user);
+        repository.save(user);
 
-//        var accessToken = jwtService.generateToken(user);
-//        var refreshToken = jwtService.generateRefreshToken(user);
-//        saveUserToken(savedUser, accessToken);
-//        setAuthCookie(response, accessToken);
-//        setRefreshCookie(response, refreshToken);
 
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = VerificationToken.builder()
@@ -80,12 +81,14 @@ public class AuthenticationService {
 
         emailService.sendVerificationEmail(user.getEmail(), token);
 
-
     }
 
     public void registerDoctor(RegisterRequestDoctor request, HttpServletResponse response) {
-        var local = locationMapper.toLocation(request);
 
+        if (repository.existsByEmail(request.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
+        }
+        var local = locationMapper.toRegisterLocation(request);
         var user = Doctor.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -99,13 +102,7 @@ public class AuthenticationService {
                 .isValidated(false)
                 .build();
 
-        var savedUser = repository.save(user);
-
-//        var accessToken = jwtService.generateToken(user);
-//        var refreshToken = jwtService.generateRefreshToken(user);
-//        saveUserToken(savedUser, accessToken);
-//        setAuthCookie(response, accessToken);
-//        setRefreshCookie(response, refreshToken);
+        repository.save(user);
 
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = VerificationToken.builder()
@@ -116,9 +113,6 @@ public class AuthenticationService {
                 .build();
 
         verificationTokenRepository.save(verificationToken);
-
-        emailService.sendVerificationEmail(user.getEmail(), token);
-
 
     }
 
@@ -137,12 +131,10 @@ public class AuthenticationService {
             doctor.setValidated(true);
             doctor.setVerificationToken(null);
             repository.save(doctor);
-            generateAndSetTokens(doctor, response);
         } else if (verificationToken.getUserRole() == Role.PATIENT && patient != null) {
             patient.setValidated(true);
             patient.setVerificationToken(null);
             repository.save(patient);
-            generateAndSetTokens(patient, response);
         } else {
             throw new IllegalStateException("No valid user found for this token");
         }
@@ -220,6 +212,7 @@ public class AuthenticationService {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         response.addHeader("Access-Control-Allow-Origin", "http://localhost:4200 ");
         response.addHeader("Access-Control-Allow-Credentials", "true");
+        SecurityContextHolder.clearContext();
     }
 
     private void revokeAllUserTokens(User user) {

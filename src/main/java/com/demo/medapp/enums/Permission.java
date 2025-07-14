@@ -14,6 +14,7 @@ public enum Permission {
     ADMIN_CREATE("admin:create"),
     ADMIN_DELETE("admin:delete"),
 
+
     DOCTOR_READ("doctor:read"),
     DOCTOR_UPDATE("doctor:update"),
     DOCTOR_CREATE("doctor:create"),

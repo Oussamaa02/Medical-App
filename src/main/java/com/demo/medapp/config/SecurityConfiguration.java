@@ -31,6 +31,20 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
+    private static final String[] WHITELIST_URLS = {
+            "/auth/**",
+            "/v2/api-docs",
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-ui.html"
+    };
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,38 +52,26 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/admin/**").hasAnyRole(ADMIN.name(),DOCTOR.name(),PATIENT.name())
-                        .requestMatchers(HttpMethod.GET, "/admin/**").hasAnyAuthority(ADMIN_READ.name(), DOCTOR_READ.name())
-                        .requestMatchers(HttpMethod.POST, "/admin/**").hasAnyAuthority(ADMIN_CREATE.name(), DOCTOR_CREATE.name())
-                        .requestMatchers(HttpMethod.PUT, "/admin/**").hasAnyAuthority(ADMIN_UPDATE.name(), DOCTOR_UPDATE.name())
-                        .requestMatchers(HttpMethod.DELETE, "/admin/**").hasAnyAuthority(ADMIN_DELETE.name(), DOCTOR_DELETE.name())
+                        .requestMatchers(WHITELIST_URLS).permitAll()
+                        // Admin endpoints
+                        .requestMatchers("/admin/**").hasRole(ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/admin/**").hasAuthority(ADMIN_READ.getPermission())
+                        .requestMatchers(HttpMethod.POST, "/admin/validate").hasAuthority(ADMIN_CREATE.getPermission())
+                        .requestMatchers(HttpMethod.POST, "/admin/create-user").hasAuthority(ADMIN_CREATE.getPermission())
+                        .requestMatchers(HttpMethod.PUT, "/admin/**").hasAuthority(ADMIN_UPDATE.getPermission())
+                        .requestMatchers(HttpMethod.DELETE, "/admin/**").hasAuthority(ADMIN_DELETE.getPermission())
 
-                        .requestMatchers("/doctor/**").hasRole(DOCTOR.name())
-                        .requestMatchers(HttpMethod.GET, "/doctor/**").hasAuthority(DOCTOR_READ.name())
-                        .requestMatchers(HttpMethod.POST, "/doctor/**").hasAuthority(DOCTOR_CREATE.name())
-                        .requestMatchers(HttpMethod.PUT, "/doctor/**").hasAuthority(DOCTOR_UPDATE.name())
-                        .requestMatchers(HttpMethod.DELETE, "/doctor/**").hasAuthority(DOCTOR_DELETE.name())
+                        // Doctor endpoints
+                        .requestMatchers("/doctor/**").hasRole( DOCTOR.name())
+                        .requestMatchers(HttpMethod.GET, "/doctor/**").hasAnyAuthority( DOCTOR_READ.getPermission())
+                        .requestMatchers(HttpMethod.PUT, "/doctor/profile").hasAnyAuthority(DOCTOR_UPDATE.getPermission())
+                        .requestMatchers(HttpMethod.DELETE, "/doctor/profile").hasAnyAuthority( DOCTOR_DELETE.getPermission())
 
+                        // Patient endpoints
                         .requestMatchers("/patient/**").hasRole(PATIENT.name())
-                        .requestMatchers(HttpMethod.GET, "/patient/**").hasAuthority(PATIENT_READ.name())
-                        .requestMatchers(HttpMethod.POST, "/patient/**").hasAuthority(PATIENT_CREATE.name())
-                        .requestMatchers(HttpMethod.PUT, "/patient/**").hasAuthority(PATIENT_UPDATE.name())
-                        .requestMatchers(HttpMethod.DELETE, "/patient/**").hasAuthority(PATIENT_DELETE.name())
-
-                        .requestMatchers(
-                                "/v2/api-docs",
-                                "/v3/api-docs",
-                                "/v3/api-docs/**",
-                                "/swagger-resources",
-                                "/swagger-resources/**",
-                                "/configuration/ui",
-                                "/configuration/security",
-                                "/swagger-ui/**",
-                                "/webjars/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
-
+                        .requestMatchers(HttpMethod.GET, "/patient/profile").hasAnyAuthority(PATIENT_READ.getPermission())
+                        .requestMatchers(HttpMethod.PUT, "/patient/profile").hasAnyAuthority(PATIENT_UPDATE.getPermission())
+                        .requestMatchers(HttpMethod.DELETE, "/patient/profile").hasAnyAuthority( PATIENT_DELETE.getPermission())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

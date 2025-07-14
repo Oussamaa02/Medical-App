@@ -27,39 +27,22 @@ import java.util.stream.Collectors;
 public enum Role {
     ADMIN(
             Set.of(
-                    ADMIN_READ,
-                    ADMIN_UPDATE,
-                    ADMIN_DELETE,
-                    ADMIN_CREATE,
-                    DOCTOR_READ,
-                    DOCTOR_UPDATE,
-                    DOCTOR_DELETE,
-                    DOCTOR_CREATE,
-                    PATIENT_READ,
-                    PATIENT_UPDATE,
-                    PATIENT_DELETE,
-                    PATIENT_CREATE
+                    ADMIN_READ, ADMIN_UPDATE, ADMIN_DELETE, ADMIN_CREATE
             )
     ),
     DOCTOR(
             Set.of(
-                    DOCTOR_READ,
-                    DOCTOR_UPDATE,
-                    DOCTOR_DELETE,
-                    DOCTOR_CREATE
+                    DOCTOR_READ, DOCTOR_UPDATE,DOCTOR_CREATE,
+                    DOCTOR_DELETE// Allow doctors to delete their own account
             )
     ),
-
     PATIENT(
             Set.of(
-                    PATIENT_READ,
-                    PATIENT_UPDATE,
-                    PATIENT_DELETE,
-                    PATIENT_CREATE
+                    PATIENT_READ, PATIENT_UPDATE,PATIENT_CREATE,
+                    PATIENT_DELETE // Allow patients to delete their account
+                    // Removed PATIENT_CREATE as patients shouldn't create other patients
             )
-    )
-
-    ;
+    );
 
     private final Set<Permission> permissions;
 
