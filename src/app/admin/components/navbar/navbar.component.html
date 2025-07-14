@@ -9,36 +9,37 @@
             alt="MedAPP Logo"
             class="w-8 h-8"
           />
-          <a 
-          (click)="navigateToHome()"
-            class="hidden md:inline text-xl font-bold text-blue-600 hover:text-blue-800 hover:cursor-pointer"
+          <p 
+            class="hidden md:inline text-xl font-bold text-blue-600 "
           >
             MedAPP
-          </a>
+        </p>
         </div>
   
         <!-- Center - Navigation Links -->
         <div class="flex items-center space-x-4">
           <a 
-            (click)="navigateToHome()"
-            [class]="getNavItemClass('/')"
+            (click)="navigateToDoctors()"
+            routerLink="/admin/doctors"
+            routerLinkActive="text-blue-600 font-bold"
             class="transition-colors duration-200  hover:cursor-pointer"
           >
-            Home
+            Doctors
           </a>
           
           <a 
-            (click)="navigateToAbout()"
-            [class]="getNavItemClass('/about')"
+            (click)="navigateToPatients()"
+            routerLink="/admin/patients"
+            routerLinkActive="text-blue-600 font-bold"
             class="transition-colors duration-200  hover:cursor-pointer"
           >
-            About
+            Patients
           </a>
   
           <a 
             *ngIf="isLoggedIn$ | async"
             routerLink="/appointments"
-            [class]="getNavItemClass('/appointments')"
+            routerLinkActive="text-blue-600 font-bold"
             class="transition-colors duration-200  hover:cursor-pointer"
           >
             Appointments

@@ -27,15 +27,34 @@
   
   <div  class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
     <h2 class="text-center text-black text-2xl font-semibold mb-4">Sign Up</h2>
+    <div *ngIf="showNotification && selectedRole=='doctor'"  class="toast">
+      ✅ Pending approval. You’ll get a confirmation email once approved.
+    </div>
+    <div *ngIf="showNotification && selectedRole=='patient'"  class="toast">
+      ✅ Check your email for verification
+    </div>
+    <div *ngIf="showError" class="pop">
+      ❌​ This email is already registered.
+    </div>
     <form *ngIf="selectedRole=='patient'" [formGroup]="patientRegisterForm" (ngSubmit)="onSubmitPatient()" class="flex flex-col gap-3">
       <div *ngIf="error" class="text-red-500">{{ error }}</div>
-
+      <div *ngIf="patientRegisterForm.get('age')?.invalid && patientRegisterForm.get('age')?.touched" class="text-red-500 text-sm">
+        Age is required and must be a positive number.
+      </div>
       <input type="text" formControlName="firstName" placeholder="First Name" class="p-2 border text-black rounded-md border-gray-300" />
       <input type="text" formControlName="lastName" placeholder="Last Name" class="p-2 border text-black rounded-md border-gray-300" />
       <input type="email" formControlName="email" placeholder="Email" class="p-2 border text-black rounded-md border-gray-300" />
       <input type="password" formControlName="password" placeholder="Password" class="p-2 border text-black rounded-md border-gray-300" />
       <input type="tel" formControlName="phoneNumber" placeholder="Phone Number" class="p-2 border text-black rounded-md border-gray-300" />
-
+      <input type="number" formControlName="age" placeholder="Age" class="p-2 border text-black rounded-md border-gray-300" />
+      <select 
+      class="p-2 border text-black rounded-md border-gray-300 w-full"
+      formControlName="gender"
+    >
+      <option value="" disabled >Select Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
       <button type="submit" class="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
         Sign Up
       </button>

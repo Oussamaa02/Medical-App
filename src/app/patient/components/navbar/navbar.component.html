@@ -1,0 +1,71 @@
+<nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        
+        <!-- Left - Logo -->
+        <div class="flex items-center space-x-2">
+          <img
+            src="/assets/logo.svg"
+            alt="MedAPP Logo"
+            class="w-8 h-8"
+          />
+          <p 
+            class="hidden md:inline text-xl font-bold text-blue-600 "
+          >
+            MedAPP
+        </p>
+        </div>
+  
+        <!-- Center - Navigation Links -->
+        <div class="flex items-center space-x-4">
+          <a 
+            routerLink="/patient/home"
+            routerLinkActive="text-blue-600 font-bold"
+            (click)="navigateToHome()"
+            class="transition-colors duration-200  hover:cursor-pointer"
+          >
+            Home
+          </a>
+          
+          <a 
+            routerLink="/patient/about"
+            routerLinkActive="text-blue-600 font-bold"
+            (click)="navigateToAbout()"
+            class="transition-colors duration-200  hover:cursor-pointer"
+          >
+            About
+          </a>
+  
+          <a 
+          (click)="navigateToAppointments()"
+            routerLink="/appointments"
+            routerLinkActive="text-blue-600 font-bold"
+            class="transition-colors duration-200  hover:cursor-pointer"
+          >
+            Appointments
+          </a>
+        </div>
+  
+        <!-- Right - Authentication -->
+        <div class="flex items-center space-x-4">
+          <ng-container *ngIf="isLoggedIn$ | async; else loginButton">
+            <button
+              (click)="onLogout()"
+              class="text-red-500 hover:text-red-700 transition-colors duration-200"
+            >
+              Logout
+            </button>
+          </ng-container>
+          
+          <ng-template #loginButton>
+            <button
+              (click)="navigateToLogin()"
+              class="bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 transition-colors duration-200"
+            >
+              Login
+            </button>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </nav>

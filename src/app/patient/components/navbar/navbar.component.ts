@@ -1,52 +1,42 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter, map, Observable, of, catchError } from 'rxjs';
-import { AuthenticationControllerService } from '../../services/services/authentication-controller.service';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/custom-services/auth.service';
+import { AuthService } from '../../../services/custom-services/auth.service';
+
 @Component({
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   selector: 'app-navbar',
   templateUrl: './navbar.component.html'
 })
 export class NavbarComponent implements OnInit {
   isLoggedIn$: Observable<boolean> = of(false);
-  currentRoute: string = '';
 
   constructor(private authServiceCheck: AuthService, private router: Router, private auth : AuthService) {}
 
   ngOnInit(): void {
     this.isLoggedIn$ = this.authServiceCheck.checkLoginStatus();
-    this.currentRoute = this.router.url;
+   
   }
-    
 
   onLogout(): void {
     this.auth.logout().subscribe(() => {
-      window.location.reload(); // Full refresh to clear state
+      window.location.href = '/login';
     });
   }
   
-  isActiveRoute(route: string): boolean {
-    return this.currentRoute === route;
-  }
-
-getNavItemClass(route: string): string {
-    return this.isActiveRoute(route)
-      ? 'text-blue-600 font-bold'
-      : 'text-black hover:text-blue-600';
-  }
-
   navigateToLogin(): void {
     this.router.navigate(['/login']);
   }
 
   navigateToHome(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/patient/home']); 
   }
-
+  navigateToAppointments(): void {
+    this.router.navigate(['/patient/appointment']); 
+  }
   navigateToAbout(): void {
-    this.router.navigate(['/about']);
+    this.router.navigate(['/patient/about']);
   }
 }
