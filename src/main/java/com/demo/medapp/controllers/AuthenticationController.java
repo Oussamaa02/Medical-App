@@ -1,10 +1,11 @@
 package com.demo.medapp.controllers;
 
-import com.demo.medapp.auth.*;
+import com.demo.medapp.dtos.requests.AuthenticationRequest;
+import com.demo.medapp.dtos.requests.RegisterRequestDoctor;
+import com.demo.medapp.dtos.requests.RegisterRequestPatient;
 import com.demo.medapp.models.User;
 
 import com.demo.medapp.repos.UserRepository;
-import com.demo.medapp.repos.VerificationTokenRepository;
 import com.demo.medapp.services.AuthenticationService;
 import com.demo.medapp.services.JwtService;
 import jakarta.servlet.http.Cookie;

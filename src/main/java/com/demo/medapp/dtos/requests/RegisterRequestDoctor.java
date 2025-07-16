@@ -1,4 +1,4 @@
-package com.demo.medapp.auth;
+package com.demo.medapp.dtos.requests;
 
 import lombok.*;
 

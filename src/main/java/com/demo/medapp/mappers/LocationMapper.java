@@ -1,6 +1,6 @@
 package com.demo.medapp.mappers;
 
-import com.demo.medapp.auth.RegisterRequestDoctor;
+import com.demo.medapp.dtos.requests.RegisterRequestDoctor;
 import com.demo.medapp.dtos.LocationDto;
 import org.springframework.stereotype.Service;
 import com.demo.medapp.models.Location;

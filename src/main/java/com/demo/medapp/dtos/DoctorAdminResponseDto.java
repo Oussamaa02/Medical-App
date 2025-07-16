@@ -1,8 +1,6 @@
 package com.demo.medapp.dtos;
 
-import com.demo.medapp.models.Location;
-
-public record DoctorDto(
+public record DoctorAdminResponseDto(
         String firstName,
         String lastName,
         String email,

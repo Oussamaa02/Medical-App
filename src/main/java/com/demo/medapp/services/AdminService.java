@@ -1,7 +1,7 @@
 package com.demo.medapp.services;
 
-import com.demo.medapp.dtos.DoctorDto;
-import com.demo.medapp.dtos.PatientDto;
+import com.demo.medapp.dtos.DoctorAdminResponseDto;
+import com.demo.medapp.dtos.PatientAdminResponseDto;
 import com.demo.medapp.mappers.DoctorMapper;
 import com.demo.medapp.mappers.PatientMapper;
 import com.demo.medapp.repos.*;
@@ -22,17 +22,17 @@ public class AdminService {
     private final EmailService emailService;
     private final VerificationTokenRepository verificationTokenRepository;
 
-    public List<PatientDto> findAllPatients (){
+    public List<PatientAdminResponseDto> findAllPatients (){
         return patientRepository.findAll()
                 .stream()
-                .map(patientMapper::toPatientResponseDto)
+                .map(patientMapper::toPatientAdminResponseDto)
                 .collect(Collectors.toList());
     }
 
-    public List<DoctorDto> findAllDoctors (){
+    public List<DoctorAdminResponseDto> findAllDoctors (){
         return doctorRepository.findAll()
                 .stream()
-                .map(doctorMapper::toDoctorResponseDto)
+                .map(doctorMapper::toDoctorAdminResponseDto)
                 .collect(Collectors.toList());
     }
 
@@ -42,8 +42,21 @@ public class AdminService {
             var token = verificationTokenRepository.findByDoctorId(id).orElseThrow();
             emailService.sendVerificationEmail(user.getEmail(), token.getToken());
 
-
-
     }
+
+    public void removeDoctor(String email){
+        var user = userRepository.findByEmail(email).orElseThrow();
+        long id = user.getId();
+        doctorRepository.deleteById(id);
+        userRepository.deleteById(id);
+    }
+
+    public void removePatient(String email){
+        var user = userRepository.findByEmail(email).orElseThrow();
+        long id = user.getId();
+        patientRepository.deleteById(id);
+        userRepository.deleteById(id);
+    }
+
 
 }

@@ -23,6 +23,7 @@ public class Appointment {
 
     private LocalTime time;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @ManyToOne

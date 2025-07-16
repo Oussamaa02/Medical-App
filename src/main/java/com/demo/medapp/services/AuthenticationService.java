@@ -1,8 +1,8 @@
 package com.demo.medapp.services;
 
-import com.demo.medapp.auth.AuthenticationRequest;
-import com.demo.medapp.auth.RegisterRequestDoctor;
-import com.demo.medapp.auth.RegisterRequestPatient;
+import com.demo.medapp.dtos.requests.AuthenticationRequest;
+import com.demo.medapp.dtos.requests.RegisterRequestDoctor;
+import com.demo.medapp.dtos.requests.RegisterRequestPatient;
 import com.demo.medapp.enums.Role;
 import com.demo.medapp.enums.TokenType;
 import com.demo.medapp.mappers.LocationMapper;
@@ -15,7 +15,6 @@ import com.demo.medapp.tokens.VerificationToken;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

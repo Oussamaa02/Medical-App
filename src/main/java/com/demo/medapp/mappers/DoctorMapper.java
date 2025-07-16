@@ -1,10 +1,8 @@
 package com.demo.medapp.mappers;
 
-import com.demo.medapp.dtos.DoctorDto;
-import com.demo.medapp.dtos.LocationDto;
-import com.demo.medapp.dtos.PatientDto;
+import com.demo.medapp.dtos.DoctorAdminResponseDto;
+import com.demo.medapp.dtos.DoctorPatientResponseDto;
 import com.demo.medapp.models.Doctor;
-import com.demo.medapp.models.Patient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +11,8 @@ import org.springframework.stereotype.Service;
 public class DoctorMapper {
     private final LocationMapper locationMapper;
 
-    public DoctorDto toDoctorResponseDto(Doctor doctor){
-        return new DoctorDto(
+    public DoctorAdminResponseDto toDoctorAdminResponseDto(Doctor doctor){
+        return new DoctorAdminResponseDto(
                 doctor.getFirstName(),
                 doctor.getLastName(),
                 doctor.getEmail(),
@@ -23,6 +21,17 @@ public class DoctorMapper {
                 doctor.getSpeciality(),
                 locationMapper.toLocationResponseDto(doctor.getLocation()),
                 doctor.isValidated()
+        );
+    }
+
+    public DoctorPatientResponseDto toDoctorPatientResponseDto(Doctor doctor){
+        return new DoctorPatientResponseDto(
+                doctor.getFirstName(),
+                doctor.getLastName(),
+                doctor.getEmail(),
+                doctor.getPhoneNumber(),
+                doctor.getSpeciality(),
+                locationMapper.toLocationResponseDto(doctor.getLocation())
         );
     }
 }

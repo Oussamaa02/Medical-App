@@ -1,7 +1,7 @@
 package com.demo.medapp.controllers;
 
-import com.demo.medapp.dtos.DoctorDto;
-import com.demo.medapp.dtos.PatientDto;
+import com.demo.medapp.dtos.DoctorAdminResponseDto;
+import com.demo.medapp.dtos.PatientAdminResponseDto;
 import com.demo.medapp.services.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +17,12 @@ public class AdminController {
     private final AdminService service;
 
     @GetMapping("/patients")
-    public List<PatientDto> getPatients() {
+    public List<PatientAdminResponseDto> getPatients() {
         return service.findAllPatients();
     }
 
     @GetMapping("/doctors")
-    public List<DoctorDto> getDoctors() {
+    public List<DoctorAdminResponseDto> getDoctors() {
         return service.findAllDoctors();
     }
 
@@ -31,13 +31,13 @@ public class AdminController {
         service.validateDoctor(email);
     }
 
-
-    @PutMapping
-    public String put() {
-        return "PUT:: admin controller";
+    @DeleteMapping("/remove-doctor")
+    public void removeDoctor(@RequestParam String email){
+        service.removeDoctor(email);
     }
-    @DeleteMapping
-    public String delete() {
-        return "DELETE:: admin controller";
+
+    @DeleteMapping("/remove-patient")
+    public void removePatient(@RequestParam String email){
+        service.removePatient(email);
     }
 }

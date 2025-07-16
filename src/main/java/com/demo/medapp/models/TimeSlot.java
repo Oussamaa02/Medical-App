@@ -1,12 +1,8 @@
 package com.demo.medapp.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -15,19 +11,25 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class TimeSlot {
     @Id
     @GeneratedValue
     private Long id;
 
-    private LocalDate date;
-
     private LocalTime startTime;
-
-    private LocalTime endTime;
 
     private boolean isAvailable;
 
     @OneToMany(mappedBy = "timeSlot")
     private List<Appointment> appointments;
+
+    @ManyToMany
+    @JoinTable(
+        name = "doctor-timeslot",
+        joinColumns = @JoinColumn(name = "timeSlot_id"),
+        inverseJoinColumns = @JoinColumn(name = "doctor_id")
+
+    )
+    private List<Doctor> doctors;
 }

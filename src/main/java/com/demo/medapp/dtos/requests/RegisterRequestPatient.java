@@ -1,6 +1,5 @@
-package com.demo.medapp.auth;
+package com.demo.medapp.dtos.requests;
 
-import com.demo.medapp.enums.Role;
 import lombok.*;
 
 @Getter

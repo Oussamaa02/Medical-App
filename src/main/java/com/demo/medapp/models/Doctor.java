@@ -31,4 +31,7 @@ public class Doctor extends User {
 
     @OneToOne(mappedBy = "doctor",cascade = CascadeType.ALL)
     private VerificationToken verificationToken;
+
+    @ManyToMany(mappedBy = "doctors")
+    private List<TimeSlot> timeSlots;
 }
