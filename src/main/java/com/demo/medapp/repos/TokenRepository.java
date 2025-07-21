@@ -14,7 +14,12 @@ where u.id = :userId and (t.expired = false or t.revoked = false)
 """)
     List<Token> findAllValidTokenByUser (Long userId);
 
+    List<Token> findAllByUserId (long userId);
+
     Optional<Token> findByToken(String token);
+
+    void deleteByToken(String token);
+
 }
 
 

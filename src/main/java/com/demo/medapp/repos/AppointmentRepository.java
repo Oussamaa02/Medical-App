@@ -1,6 +1,5 @@
 package com.demo.medapp.repos;
 
-import com.demo.medapp.dtos.AppointmentDto;
 import com.demo.medapp.models.Appointment;
 import com.demo.medapp.models.Doctor;
 import com.demo.medapp.models.Patient;
@@ -14,4 +13,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment,Long> {
     Optional<Appointment> findByDate(LocalDate date);
     List<Appointment> findByPatient (Patient patient);
     List<Appointment> findByDoctor (Doctor doctor);
+    List<Appointment> findByDoctorAndDate(Doctor doctor, LocalDate date);
 }

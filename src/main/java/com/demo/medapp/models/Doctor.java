@@ -23,6 +23,9 @@ public class Doctor extends User {
     @Column(nullable = false,  columnDefinition = "boolean default false")
     private boolean isValidated;
 
+    @Column(nullable = false,  columnDefinition = "boolean default false")
+    private boolean isPending;
+
     @Embedded
     private Location location;
 

@@ -16,8 +16,6 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ammarioussama03@gmail.com
-    password: ucst opxq qozu zsgv
     properties:
       mail:
         smtp:
@@ -25,6 +23,10 @@ spring:
           starttls:
             enable: true
     default-encoding: UTF-8
+  jackson:
+    serialization:
+      write-date-keys-as-timestamps: false
+    time-zone: UTC
 
 
 application:

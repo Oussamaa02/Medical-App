@@ -128,9 +128,11 @@ public class AuthenticationService {
 
         if (verificationToken.getUserRole() == Role.DOCTOR && doctor != null) {
             doctor.setValidated(true);
+            doctor.setPending(false);
             doctor.setVerificationToken(null);
             repository.save(doctor);
-        } else if (verificationToken.getUserRole() == Role.PATIENT && patient != null) {
+        }
+        else if (verificationToken.getUserRole() == Role.PATIENT && patient != null) {
             patient.setValidated(true);
             patient.setVerificationToken(null);
             repository.save(patient);
@@ -200,7 +202,10 @@ public class AuthenticationService {
 
 
     // For logout
-    public void clearAuthCookie(HttpServletResponse response) {
+    public void clearAuthCookie(HttpServletResponse response,HttpServletRequest request) {
+
+        getCookieValue(request).ifPresent(tokenRepository::deleteByToken);
+
         ResponseCookie cookie = ResponseCookie.from(JWT_COOKIE_NAME, "")
                 .httpOnly(true)
                 .path("/")
@@ -209,8 +214,8 @@ public class AuthenticationService {
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        response.addHeader("Access-Control-Allow-Origin", "http://localhost:4200 ");
-        response.addHeader("Access-Control-Allow-Credentials", "true");
+//        response.addHeader("Access-Control-Allow-Origin", "http://localhost:4200 ");
+//        response.addHeader("Access-Control-Allow-Credentials", "true");
         SecurityContextHolder.clearContext();
     }
 

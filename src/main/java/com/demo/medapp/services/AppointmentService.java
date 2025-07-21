@@ -1,6 +1,8 @@
 package com.demo.medapp.services;
 
-import com.demo.medapp.dtos.AppointmentDto;
+import com.demo.medapp.dtos.AppointmentAdminDto;
+import com.demo.medapp.dtos.AppointmentDoctorDto;
+import com.demo.medapp.dtos.AppointmentPatientDto;
 import com.demo.medapp.enums.Status;
 import com.demo.medapp.mappers.AppointmentMapper;
 import com.demo.medapp.models.Appointment;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,11 +35,12 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final TimeSlotRepository timeSlotRepository;
     private final AppointmentMapper appointmentMapper;
+    private final TimeSlotService timeSlotService;
 
     //For patient
     @Transactional
     public void patientBookAppointment(LocalTime startTime, LocalDate date, long doctorId, HttpServletRequest request) {
-        List<TimeSlot> timeSlots = patientService.listDoctorAvailableTimes(doctorId);
+        List<TimeSlot> timeSlots = timeSlotService.listAvailableTimeSlots(date,doctorId);
 
         Optional<TimeSlot> optionalTimeSlot = timeSlots
                 .stream()
@@ -49,9 +53,6 @@ public class AppointmentService {
 
         TimeSlot timeSlot = optionalTimeSlot.get();
 
-        if (!timeSlot.isAvailable()) {
-            throw new IllegalArgumentException("Time slot is already booked");
-        }
 
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
@@ -61,16 +62,12 @@ public class AppointmentService {
         Appointment appointment = Appointment.builder()
                 .doctor(doctor)
                 .patient(patient)
-                .timeSlot(timeSlot)
                 .time(timeSlot.getStartTime())
                 .date(date)
                 .status(Status.BOOKED)
                 .build();
 
         appointmentRepository.save(appointment);
-
-        timeSlot.setAvailable(false);
-        timeSlotRepository.save(timeSlot);
     }
 
     @Transactional
@@ -85,12 +82,6 @@ public class AppointmentService {
         }
 
         appointment.setStatus(Status.CANCELED);
-
-        TimeSlot slot = appointment.getTimeSlot();
-        if (slot != null) {
-            slot.setAvailable(true);
-            timeSlotRepository.save(slot);
-        }
 
         appointmentRepository.save(appointment);
     }
@@ -112,35 +103,32 @@ public class AppointmentService {
             throw new SecurityException("Unauthorized to reschedule this appointment.");
         }
 
-        TimeSlot oldSlot = appointment.getTimeSlot();
-        if (oldSlot != null) {
-            oldSlot.setAvailable(true);
-            timeSlotRepository.save(oldSlot);
+        List<TimeSlot> timeSlots = timeSlotService.listAvailableTimeSlots(newDate,doctorId);
+
+        Optional<TimeSlot> optionalTimeSlot = timeSlots
+                .stream()
+                .filter(slot -> slot.getStartTime().equals(newTime))
+                .findFirst();
+
+        if (optionalTimeSlot.isEmpty()) {
+            throw new IllegalArgumentException("Time slot not found for this doctor");
         }
 
-        TimeSlot newSlot = timeSlotRepository.findByStartTimeAndDoctorsId(newTime, doctorId)
-                .orElseThrow(() -> new IllegalArgumentException("Time slot not available"));
+        TimeSlot newSlot = optionalTimeSlot.get();
 
-        if (!newSlot.isAvailable()) {
-            throw new IllegalArgumentException("This time slot is already booked.");
-        }
-
-        newSlot.setAvailable(false);
-        appointment.setTimeSlot(newSlot);
         appointment.setTime(newSlot.getStartTime());
         appointment.setDate(newDate);
         appointment.setStatus(Status.RESCHEDULED);
 
-        timeSlotRepository.save(newSlot);
         appointmentRepository.save(appointment);
     }
 
-    public List<AppointmentDto> getAllAppointmentsForPatient (HttpServletRequest request){
+    public List<AppointmentPatientDto> getAllAppointmentsForPatient (HttpServletRequest request){
         Patient patient = patientService.getCurrentPatient(request);
 
-        List<AppointmentDto> appointments = appointmentRepository.findByPatient(patient)
+        List<AppointmentPatientDto> appointments = appointmentRepository.findByPatient(patient)
                 .stream()
-                .map(appointmentMapper::toAppointmentDto)
+                .map(appointmentMapper::toPatientAppointmentDto)
                 .collect(Collectors.toList());
         if (appointments.isEmpty()) {
             throw new IllegalArgumentException("No appointments found!");
@@ -149,11 +137,11 @@ public class AppointmentService {
 
     }
 
-    public List<AppointmentDto> getBookedAppointmentsForPatient (HttpServletRequest request){
+    public List<AppointmentPatientDto> getBookedAppointmentsForPatient (HttpServletRequest request){
         Patient patient = patientService.getCurrentPatient(request);
-        List<AppointmentDto> appointments = appointmentRepository.findByPatient(patient)
+        List<AppointmentPatientDto> appointments = appointmentRepository.findByPatient(patient)
                 .stream()
-                .map(appointmentMapper::toAppointmentDto)
+                .map(appointmentMapper::toPatientAppointmentDto)
                 .toList();
 
         if (appointments.isEmpty()) {
@@ -165,11 +153,11 @@ public class AppointmentService {
                 .toList();
     }
 
-    public List<AppointmentDto> getCanceledAppointmentsForPatient (HttpServletRequest request){
+    public List<AppointmentPatientDto> getCanceledAppointmentsForPatient (HttpServletRequest request){
         Patient patient = patientService.getCurrentPatient(request);
-        List<AppointmentDto> appointments = appointmentRepository.findByPatient(patient)
+        List<AppointmentPatientDto> appointments = appointmentRepository.findByPatient(patient)
                 .stream()
-                .map(appointmentMapper::toAppointmentDto)
+                .map(appointmentMapper::toPatientAppointmentDto)
                 .toList();
         if (appointments.isEmpty()) {
             throw new IllegalArgumentException("No appointments found!");
@@ -180,11 +168,11 @@ public class AppointmentService {
                 .toList();
     }
 
-    public List<AppointmentDto> getRescheduledAppointmentsForPatient (HttpServletRequest request){
+    public List<AppointmentPatientDto> getRescheduledAppointmentsForPatient (HttpServletRequest request){
         Patient patient = patientService.getCurrentPatient(request);
-        List<AppointmentDto> appointments = appointmentRepository.findByPatient(patient)
+        List<AppointmentPatientDto> appointments = appointmentRepository.findByPatient(patient)
                 .stream()
-                .map(appointmentMapper::toAppointmentDto)
+                .map(appointmentMapper::toPatientAppointmentDto)
                 .toList();
 
         if (appointments.isEmpty()) {
@@ -210,26 +198,35 @@ public class AppointmentService {
 
         appointment.setStatus(Status.CANCELED);
 
-        TimeSlot slot = appointment.getTimeSlot();
-        if (slot != null) {
-            slot.setAvailable(true);
-            timeSlotRepository.save(slot);
-        }
-
         appointmentRepository.save(appointment);
     }
 
-    public List<AppointmentDto> getAllAppointmentsForDoctor (HttpServletRequest request){
+    public List<AppointmentDoctorDto> getAllAppointmentsForDoctor (HttpServletRequest request){
         Doctor doctor = doctorService.getCurrentDoctor(request);
 
         if (appointmentRepository.findByDoctor(doctor).isEmpty()) {
-            throw new IllegalArgumentException("No appointments found!");
+            return Collections.emptyList();
         }
         else {
             return appointmentRepository.findByDoctor(doctor)
                     .stream()
-                    .map(appointmentMapper::toAppointmentDto)
+                    .map(appointmentMapper::toDoctorAppointmentDto)
                     .collect(Collectors.toList());
         }
     }
+
+    //For admin
+    public List<AppointmentAdminDto> getAllAppointmentsForAdmin (HttpServletRequest request){
+
+        if (appointmentRepository.findAll().isEmpty()) {
+            throw new IllegalArgumentException("No appointments found!");
+        }
+        else {
+            return appointmentRepository.findAll()
+                    .stream()
+                    .map(appointmentMapper::toAdminAppointmentDto)
+                    .collect(Collectors.toList());
+        }
+    }
+
 }

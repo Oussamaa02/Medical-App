@@ -1,6 +1,7 @@
 package com.demo.medapp.dtos;
 
 public record DoctorPatientResponseDto(
+        long id,
         String firstName,
         String lastName,
         String email,

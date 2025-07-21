@@ -19,8 +19,6 @@ public class TimeSlot {
 
     private LocalTime startTime;
 
-    private boolean isAvailable;
-
     @OneToMany(mappedBy = "timeSlot")
     private List<Appointment> appointments;
 

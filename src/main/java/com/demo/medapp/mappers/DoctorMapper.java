@@ -20,12 +20,14 @@ public class DoctorMapper {
                 doctor.getLicenseNumber(),
                 doctor.getSpeciality(),
                 locationMapper.toLocationResponseDto(doctor.getLocation()),
-                doctor.isValidated()
+                doctor.isValidated(),
+                doctor.isPending()
         );
     }
 
     public DoctorPatientResponseDto toDoctorPatientResponseDto(Doctor doctor){
         return new DoctorPatientResponseDto(
+                doctor.getId(),
                 doctor.getFirstName(),
                 doctor.getLastName(),
                 doctor.getEmail(),

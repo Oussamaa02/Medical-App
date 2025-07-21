@@ -1,10 +1,7 @@
 package com.demo.medapp.mappers;
 
-import com.demo.medapp.dtos.PatientAdminResponseDto;
 import com.demo.medapp.dtos.TimeSlotDto;
-import com.demo.medapp.models.Patient;
 import com.demo.medapp.models.TimeSlot;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service

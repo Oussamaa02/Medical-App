@@ -23,6 +23,7 @@ public class Patient extends User {
     @Column(nullable = false,  columnDefinition = "boolean default false")
     private boolean isValidated;
 
+
     @OneToMany (mappedBy = "patient")
     private List<Appointment> appointments;
 

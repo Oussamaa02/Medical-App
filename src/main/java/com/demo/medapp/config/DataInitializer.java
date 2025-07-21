@@ -14,9 +14,9 @@ public class DataInitializer {
     CommandLineRunner init(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             String adminEmail = "admin@gmail.com";
-            boolean adminExists = userRepository.findByEmail(adminEmail).isPresent();
+//            boolean adminExists = userRepository.findByEmail(adminEmail).isPresent();
+            boolean adminExists = userRepository.existsByRole(Role.ADMIN);
 
-            // Only insert if not already present
             if (!adminExists) {
                 User admin = User.builder()
                         .email(adminEmail)

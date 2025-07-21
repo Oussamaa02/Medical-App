@@ -100,10 +100,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
-        service.clearAuthCookie(response);
+    public ResponseEntity<?> logout(HttpServletResponse response, HttpServletRequest request) {
+        service.clearAuthCookie(response,request);
         return ResponseEntity.ok().body(Map.of("message", "Logout successful"));
     }
+
     @PostMapping("/refresh-token")
     public void refreshToken(
             HttpServletRequest request,

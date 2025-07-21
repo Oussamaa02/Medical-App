@@ -1,28 +1,29 @@
 package com.demo.medapp.services;
 
-import com.demo.medapp.enums.Status;
-import com.demo.medapp.models.Appointment;
+import com.demo.medapp.dtos.requests.RegisterRequestDoctor;
+import com.demo.medapp.dtos.requests.RegisterRequestPatient;
+import com.demo.medapp.mappers.LocationMapper;
 import com.demo.medapp.models.Doctor;
-import com.demo.medapp.models.TimeSlot;
-import com.demo.medapp.repos.AppointmentRepository;
+import com.demo.medapp.models.Location;
+import com.demo.medapp.models.Patient;
 import com.demo.medapp.repos.DoctorRepository;
-import com.demo.medapp.repos.TimeSlotRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class DoctorService {
-    private final TimeSlotRepository timeSlotRepository;
-    private final AppointmentRepository appointmentRepository;
+
     private final JwtService jwtService;
     private final DoctorRepository doctorRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final LocationMapper locationMapper;
 
     public Doctor getCurrentDoctor(HttpServletRequest request){
         if (request.getCookies() == null) {
@@ -48,55 +49,59 @@ public class DoctorService {
         return doctor;
     }
 
-    @Transactional
-    public void addTimeSlot(LocalTime startTime, HttpServletRequest request) {
-        Doctor doctor = getCurrentDoctor(request);
-        Optional<TimeSlot> existingSlotOpt = timeSlotRepository
-                .findByStartTime(startTime);
+    public void editProfile(RegisterRequestDoctor request, HttpServletRequest httpServletRequest) {
+        Doctor doctor = getCurrentDoctor(httpServletRequest);
 
-        TimeSlot timeSlot;
+        Location existingLocation = doctor.getLocation();
+        if (existingLocation == null) {
+            existingLocation = new Location();
+            doctor.setLocation(existingLocation);
+        }
 
-        if (existingSlotOpt.isPresent()) {
-            timeSlot = existingSlotOpt.get();
+        if (request.getFirstName() != null && !request.getFirstName().trim().isEmpty()) {
+            doctor.setFirstName(request.getFirstName());
+        }
 
-            if (!timeSlot.getDoctors().contains(doctor)) {
-                timeSlot.getDoctors().add(doctor);
+        if (request.getLastName() != null && !request.getLastName().trim().isEmpty()) {
+            doctor.setLastName(request.getLastName());
+        }
+
+        if (request.getEmail() != null && !request.getEmail().trim().isEmpty() && !request.getEmail().equals(doctor.getEmail())) {
+            if (doctorRepository.findByEmail(request.getEmail()).isPresent()) {
+                throw new IllegalArgumentException("Email is already in use");
             }
-            else{
-                throw new IllegalArgumentException("Time slot already exists!");
-            }
-
-        } else {
-            timeSlot = TimeSlot.builder()
-                    .startTime(startTime)
-                    .isAvailable(true)
-                    .doctors(Collections.singletonList(doctor))
-                    .appointments(new ArrayList<>())
-                    .build();
+            doctor.setEmail(request.getEmail());
         }
 
-        timeSlotRepository.save(timeSlot);
+        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(request.getPassword());
+            doctor.setPassword(encodedPassword);
+        }
+
+        if (request.getPhoneNumber() != null && !request.getPhoneNumber().trim().isEmpty()) {
+            doctor.setPhoneNumber(request.getPhoneNumber());
+        }
+
+        if (request.getLicenseNumber() != null && !request.getLicenseNumber().trim().isEmpty()) {
+            doctor.setLicenseNumber(request.getLicenseNumber());
+        }
+
+        if (request.getSpeciality() != null && !request.getSpeciality().trim().isEmpty()) {
+            doctor.setSpeciality(request.getSpeciality());
+        }
+
+        if (request.getAddress() != null && !request.getAddress().trim().isEmpty()) {
+            existingLocation.setAddress(request.getAddress());
+        }
+
+        if (request.getCity() != null && !request.getCity().trim().isEmpty()) {
+            existingLocation.setCity(request.getCity());
+        }
+
+        if (request.getZipCode() != null && !request.getZipCode().trim().isEmpty()) {
+            existingLocation.setZipCode(request.getZipCode());
+        }
+
+        doctorRepository.save(doctor);
     }
-
-    @Transactional
-    public void deleteTimeSlot(LocalTime startTime, HttpServletRequest request) {
-        Doctor doctor = getCurrentDoctor(request);
-
-        Optional<TimeSlot> optionalSlot = timeSlotRepository.findByStartTime(startTime);
-        if (optionalSlot.isEmpty()) {
-            throw new IllegalArgumentException("Time slot not found.");
-        }
-
-        TimeSlot slot = optionalSlot.get();
-
-        slot.getDoctors().remove(doctor);
-        doctor.getTimeSlots().remove(slot);
-
-        if (slot.getDoctors().isEmpty()) {
-            timeSlotRepository.delete(slot);
-        } else {
-            timeSlotRepository.save(slot);
-        }
-    }
-
 }

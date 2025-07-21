@@ -8,7 +8,7 @@ public record DoctorAdminResponseDto(
         String licenseNumber,
         String speciality,
         LocationDto location,
-        boolean isValidated
-
-) {
+        boolean isValidated,
+        boolean isPending
+){
 }

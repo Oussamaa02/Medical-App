@@ -25,29 +25,21 @@ public class LogoutService implements LogoutHandler {
             HttpServletResponse response,
             Authentication authentication
     ) {
-        // Try to get token from cookie first
-        Optional<String> jwt = getCookieValue(request, JWT_COOKIE_NAME);
+        // Try to extract token from cookie
+        Optional<String> jwtOpt = getCookieValue(request, JWT_COOKIE_NAME);
 
-        // Fallback to Authorization header if needed
-        if (jwt.isEmpty()) {
+        // Fallback: check Authorization header
+        if (jwtOpt.isEmpty()) {
             final String authHeader = request.getHeader("Authorization");
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                jwt = Optional.of(authHeader.substring(7));
+                jwtOpt = Optional.of(authHeader.substring(7));
             }
         }
 
-        // Revoke the token if found
-        jwt.ifPresent(token -> {
-            var storedToken = tokenRepository.findByToken(token)
-                    .orElse(null);
-            if (storedToken != null) {
-                storedToken.setExpired(true);
-                storedToken.setRevoked(true);
-                tokenRepository.save(storedToken);
-            }
-        });
+        // If found, delete it from database
+        jwtOpt.flatMap(tokenRepository::findByToken).ifPresent(tokenRepository::delete);
 
-        // Clear the authentication cookie
+        // Clear auth cookie
         clearAuthCookie(response);
     }
 
@@ -64,9 +56,12 @@ public class LogoutService implements LogoutHandler {
     private void clearAuthCookie(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from(JWT_COOKIE_NAME, "")
                 .httpOnly(true)
+                .secure(false) // set to true in production
                 .path("/")
-                .maxAge(0) // Immediately expire the cookie
+                .maxAge(0) // Expire immediately
+                .sameSite("Lax")
                 .build();
+
         response.addHeader("Set-Cookie", cookie.toString());
     }
 }

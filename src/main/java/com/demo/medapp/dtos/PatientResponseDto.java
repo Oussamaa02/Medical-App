@@ -1,6 +1,6 @@
 package com.demo.medapp.dtos;
 
-public record PatientAdminResponseDto(
+public record PatientResponseDto(
          String firstName,
          String lastName,
          String email,
