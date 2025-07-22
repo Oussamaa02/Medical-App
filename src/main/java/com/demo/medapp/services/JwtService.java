@@ -15,12 +15,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import io.github.cdimascio.dotenv.Dotenv;
 
 @Service
 public class JwtService {
+    private final Dotenv dotenv = Dotenv.load();
 
-    @Value("${application.security.jwt.secret-key}")
-    private String secretKey;
+    private final String secretKey = dotenv.get("JWT_SECRET_KEY");
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
     @Value("${application.security.jwt.refresh-key.expiration}")
