@@ -1,0 +1,67 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-white ">
+    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <!-- Hero Section -->
+      <div class="text-center mb-10">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-6">
+          <i class="fas fa-user-md text-blue-600 text-3xl"></i>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+          About Our 
+          <span class="text-blue-600">
+            Patient Portal
+          </span>
+        </h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          Connecting you with healthcare professionals when you need it most. Experience seamless healthcare management with our innovative platform.
+        </p>
+        <div class="mt-8">
+          <button 
+            class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            (click)="onGetStarted()">
+            Get Started Today
+          </button>
+        </div>
+      </div>
+  
+      <!-- Features Grid -->
+      <div class="grid grid-cols-1  lg:grid-cols-3 gap-8 mb-12">
+        <div 
+          *ngFor="let feature of features" 
+          class="feature-card bg-white rounded-2xl shadow-sm p-8 hover:shadow-lg border border-gray-200 "
+          >
+          <div [ngClass]="'w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-sm bg-blue-100 ' + feature.bgClass">
+            <i [ngClass]="'text-blue-500 text-2xl ' + feature.icon"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-3">{{ feature.title }}</h3>
+          <p class="text-gray-600 leading-relaxed">{{ feature.description }}</p>
+          
+        </div>
+      </div>
+  
+      <!-- How It Works -->
+      <div class="bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-10 border border-gray-200">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">Getting started with our platform is simple and straightforward</p>
+        </div>
+        
+        <div class="space-y-12">
+          <div 
+            *ngFor="let step of steps" 
+            class="flex flex-col md:flex-row gap-8 items-center">
+            <div class="step-indicator flex-shrink-0 w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+              {{ step.number }}
+            </div>
+            <div class="flex-1 text-center md:text-left">
+              <h3 class="text-2xl font-bold text-gray-700 mb-3">{{ step.title }}</h3>
+              <p class="text-gray-500 text-lg leading-relaxed">{{ step.description }}</p>
+            </div>
+            <div class="hidden md:block flex-shrink-0">
+              <i [ngClass]="'text-4xl ' + step.icon + ' ' + step.iconColor"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>

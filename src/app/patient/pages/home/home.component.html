@@ -1,35 +1,161 @@
-<div  class="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-blue-50 to-white flex items-center">
-  <div class="container mx-auto px-4 py-8">
-    <div class="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 lg:gap-12">
-      
-      <!-- Left: Text Content -->
-      <div class="w-full lg:w-1/2">
-        <h1 class="text-3xl sm:text-4xl font-bold leading-tight text-gray-900 mb-4">
-          Simplify Your Medical <span class="text-blue-600">Appointment Booking</span>
-        </h1>
-        <p class="text-gray-600 mb-6 leading-relaxed">
-          Schedule medical appointments effortlessly with instant confirmations.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-3">
-          <a 
-            routerLink="/about" 
-            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow transition-colors duration-300"
-          >
-            Learn More
-          </a>
-          
-        </div>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-white p-6 md:p-8">
+    <div class="max-w-7xl mx-auto">
+      <!-- Hero Section -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Find Your Perfect Doctor</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">Browse our network of qualified specialists and book appointments with ease</p>
       </div>
   
-      <!-- Right: Calendar -->
-      <div class="w-full lg:w-1/2 mb-6 lg:mb-0">
-        <div class="bg-white p-4 sm:p-6 rounded-xl shadow-md border border-gray-100">
-          <app-calendar 
-            (confirmEvent)="handleConfirm($event)"
-            (cancelEvent)="handleCancel()"
-          ></app-calendar>
+      <!-- Search and Filter Bar -->
+      <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+        <div class="flex flex-col md:flex-row gap-4">
+          <!-- Search Input -->
+          <div class="flex-grow">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input 
+                [(ngModel)]="searchQuery"
+                (input)="searchDoctors()"
+                type="text" 
+                class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Search by name, specialty, or location">
+            </div>
+          </div>
+  
+          <!-- Filters Dropdown -->
+<div class="w-full md:w-auto">
+  <div class="relative">
+    <button 
+      (click)="toggleFilters()"
+      class="inline-flex justify-between w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <span>Filters</span>
+      <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+
+    <!-- Filter Dropdown Content -->
+    <div *ngIf="showFilters" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+      <div class="py-1">
+        <div class="px-4 py-2 border-b border-gray-100">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Specialty</label>
+          <select 
+            [(ngModel)]="selectedSpecialty"
+            (change)="applyFilters()"
+            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+            <option value="">All Specialties</option>
+            <option *ngFor="let specialty of specialties" [value]="specialty">{{specialty}}</option>
+          </select>
+        </div>
+        <div class="px-4 py-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+          <select 
+            [(ngModel)]="selectedLocation"
+            (change)="applyFilters()"
+            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+            <option value="">All Locations</option>
+            <option *ngFor="let location of locations" [value]="location">{{location}}</option>
+          </select>
         </div>
       </div>
     </div>
   </div>
 </div>
+        </div>
+      </div>
+  
+      <!-- Loading State -->
+      <div *ngIf="loading" class="flex justify-center items-center p-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+  
+      <!-- Error State -->
+      <div *ngIf="error" class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-lg">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">Error loading doctors</h3>
+            <div class="mt-2 text-sm text-red-700">{{ error }}</div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Doctors Grid -->
+      <div *ngIf="!loading && doctors.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div *ngFor="let doctor of filteredDoctors" class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
+          <div class="p-6">
+            <div class="flex items-center space-x-4 mb-4">
+              <div class="flex-shrink-0">
+                <div class="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xl font-bold">
+                  {{ getInitials(doctor.firstName) }}{{ getInitials(doctor.lastName) }}
+                </div>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-gray-900">{{doctor.firstName}} {{doctor.lastName}}</h3>
+                <p class="text-sm text-blue-600">{{ doctor.speciality }}</p>
+              </div>
+            </div>
+            
+            <div class="space-y-3">
+              <div class="flex items-center text-sm text-gray-600">
+                <svg class="flex-shrink-0 mr-2 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                {{ doctor.location.address }}, {{ doctor.location.zipCode }} {{ doctor.location.city }}
+              </div>
+              <!-- <div class="flex items-center text-sm text-gray-600">
+                <svg class="flex-shrink-0 mr-2 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Available {{ doctor.availability }}
+              </div> -->
+              <!-- <div class="flex items-center text-sm text-gray-600">
+                <svg class="flex-shrink-0 mr-2 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+                {{ doctor.rating }} ({{ doctor.reviews }} reviews)
+              </div> -->
+            </div>
+  
+            <div class="mt-6 flex gap-2">
+              
+              <button 
+                (click)="viewProfile(doctor.id)"
+                class="w-1/2 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-400 hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                View Profile
+                <svg class="ml-2 -mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              <button 
+                (click)="bookAppointment(doctor.id)"
+                class="w-1/2 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Book
+                <svg class="ml-2 -mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Empty State -->
+      <div *ngIf="!loading && filteredDoctors.length === 0" class="bg-white rounded-xl shadow-sm p-12 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 class="text-lg font-medium text-gray-700 mb-2">No doctors found</h3>
+        <p class="text-gray-500 max-w-md mx-auto">Try adjusting your search or filters to find what you're looking for.</p>
+      </div>
+    </div>
+  </div>

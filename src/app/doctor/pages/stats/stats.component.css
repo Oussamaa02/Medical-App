@@ -1,0 +1,38 @@
+/* .chart-container {
+    position: relative;
+    height: 350px;
+}
+
+.stat-card {
+    background: #9ca3af;
+}
+
+.stat-card-green {
+    background:#60a5fa;
+}
+
+.stat-card-red {
+    background:#4b5563;
+}
+
+.stat-card-blue {
+    background: #2563eb;
+}
+
+.loading-spinner {
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid #3498db;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.trend-up { color: #3b82f6; }
+.trend-down { color: #4b5563; }
+.trend-same { color: #6b7280; } */

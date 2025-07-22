@@ -57,7 +57,7 @@ export class LoginComponent {
         window.location.href = '/admin/doctors';
         break;
       case 'DOCTOR':
-        window.location.href = '/patient/home';
+        window.location.href = '/doctor/home';
         break;
       case 'PATIENT':
         window.location.href = '/patient/home';

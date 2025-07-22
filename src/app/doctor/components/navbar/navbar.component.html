@@ -1,0 +1,107 @@
+<nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        
+        <!-- Left - Logo -->
+        <div class="flex items-center space-x-2">
+          <img
+            src="/assets/logo.svg"
+            alt="MedAPP Logo"
+            class="w-8 h-8"
+          />
+          <p 
+            class="hidden md:inline text-xl font-bold text-blue-600 "
+          >
+            MedAPP
+        </p>
+        </div>
+  
+        <!-- Center - Navigation Links -->
+        <div class="flex items-center space-x-4">
+          <a 
+            routerLink="/doctor/home"
+            routerLinkActive="text-blue-600 font-black"
+            (click)="navigateToHome()"
+            class="transition-colors duration-200 font-medium hover:cursor-pointer"
+          >
+            Home
+          </a>
+
+          <a 
+          routerLink="/doctor/time-slots"
+          routerLinkActive="text-blue-600 font-black"
+          (click)="navigateToTimeSlots()"
+          class="transition-colors duration-200 font-medium hover:cursor-pointer"
+        >
+          Time
+        </a>
+
+        <a 
+          (click)="navigateToStats()"
+            routerLink="/doctor/stats"
+            routerLinkActive="text-blue-600 font-black"
+            class="transition-colors duration-200 font-medium hover:cursor-pointer"
+          >
+            Stats
+          </a>
+  
+          <a 
+          (click)="navigateToAppointments()"
+            routerLink="/doctor/appointments"
+            routerLinkActive="text-blue-600 font-black"
+            class="transition-colors duration-200 font-medium hover:cursor-pointer"
+          >
+            Appointments
+          </a>
+        </div>
+  
+        <!-- Right - Authentication -->
+        <div class=" flex items-center space-x-4">
+          <!-- Profile Icon -->
+          <button
+            (click)="navigateToProfile()"
+            routerLink="/doctor/profile"
+            routerLinkActive="text-blue-600 font-blue-600"          
+            class="p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+            aria-label="User profile"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              class="h-6 w-6  hover:text-blue-600" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
+              />
+            </svg>
+          </button>
+          
+          <!-- Logout Button -->
+          <button
+            (click)="onLogout()"
+            class="text-red-500 hover:text-red-600 hover:bg-gray-100 rounded-full p-1 font-medium transition-colors duration-200 flex items-center gap-1"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              class="h-6 w-6" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>

@@ -1,71 +1,214 @@
 <nav class="bg-white shadow-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16 items-center">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16 items-center">
+      
+      <!-- Left - Logo -->
+      <div class="flex items-center space-x-2">
+        <img
+          src="/assets/logo.svg"
+          alt="MedAPP Logo"
+          class="w-8 h-8 navbar-logo"
+        />
+        <span class="hidden md:inline text-xl font-bold text-blue-600">
+          MedAPP
+        </span>
+      </div>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden flex items-center">
+        <button 
+          type="button" 
+          (click)="toggleMobileMenu()"
+          class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 focus:outline-none"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
+        >
+          <span class="sr-only">Open main menu</span>
+          <!-- Hamburger icon -->
+          <svg 
+            class="block h-6 w-6" 
+            xmlns="http://www.w3.org/2000/svg" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+            [class.hidden]="isMobileMenuOpen"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <!-- Close icon -->
+          <svg 
+            class="hidden h-6 w-6" 
+            xmlns="http://www.w3.org/2000/svg" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+            [class.block]="isMobileMenuOpen"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Desktop Navigation Links -->
+      <div class="hidden md:flex items-center space-x-6">
+        <a 
+          routerLink="/patient/home"
+          routerLinkActive="text-blue-600 font-black"
+          class="transition-colors duration-200 font-medium hover:text-blue-600"
+        >
+          Home
+        </a>
+
+        <!-- <a 
+          routerLink="/patient/booking"
+          routerLinkActive="text-blue-600 font-black"
+          class="transition-colors duration-200 font-medium hover:text-blue-600"
+        >
+          Booking
+        </a>
+         -->
+        <a 
+          routerLink="/patient/about"
+          routerLinkActive="text-blue-600 font-black"
+          class="transition-colors duration-200 font-medium hover:text-blue-600"
+        >
+          About
+        </a>
+
+        <a 
+          routerLink="/patient/appointments"
+          routerLinkActive="text-blue-600 font-black"
+          class="transition-colors duration-200 font-medium hover:text-blue-600"
+        >
+          Appointments
+        </a>
+      </div>
+
+      <!-- Desktop Authentication -->
+      <div class="hidden md:flex items-center space-x-4">
+        <!-- Profile Icon -->
+        <button
+          (click)="navigateToProfile()"
+          routerLink="/patient/profile"
+          routerLinkActive="text-blue-600 font-blue-600"          
+          class="p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+          aria-label="User profile"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            class="h-6 w-6  hover:text-blue-600" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              stroke-linecap="round" 
+              stroke-linejoin="round" 
+              stroke-width="2" 
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
+            />
+          </svg>
+        </button>
         
-        <!-- Left - Logo -->
-        <div class="flex items-center space-x-2">
-          <img
-            src="/assets/logo.svg"
-            alt="MedAPP Logo"
-            class="w-8 h-8"
-          />
-          <p 
-            class="hidden md:inline text-xl font-bold text-blue-600 "
+        <!-- Logout Button -->
+        <button
+          (click)="onLogout()"
+          class="text-red-500 hover:text-red-600 hover:bg-gray-100 rounded-full p-1 font-medium transition-colors duration-200 flex items-center gap-1"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            class="h-6 w-6" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
           >
-            MedAPP
-        </p>
-        </div>
-  
-        <!-- Center - Navigation Links -->
-        <div class="flex items-center space-x-4">
-          <a 
-            routerLink="/patient/home"
-            routerLinkActive="text-blue-600 font-bold"
-            (click)="navigateToHome()"
-            class="transition-colors duration-200  hover:cursor-pointer"
-          >
-            Home
-          </a>
-          
-          <a 
-            routerLink="/patient/about"
-            routerLinkActive="text-blue-600 font-bold"
-            (click)="navigateToAbout()"
-            class="transition-colors duration-200  hover:cursor-pointer"
-          >
-            About
-          </a>
-  
-          <a 
-          (click)="navigateToAppointments()"
-            routerLink="/appointments"
-            routerLinkActive="text-blue-600 font-bold"
-            class="transition-colors duration-200  hover:cursor-pointer"
-          >
-            Appointments
-          </a>
-        </div>
-  
-        <!-- Right - Authentication -->
-        <div class="flex items-center space-x-4">
-          <ng-container *ngIf="isLoggedIn$ | async; else loginButton">
-            <button
-              (click)="onLogout()"
-              class="text-red-500 hover:text-red-700 transition-colors duration-200"
-            >
-              Logout
-            </button>
-          </ng-container>
-          
-          <ng-template #loginButton>
-            <button
-              (click)="navigateToLogin()"
-              class="bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 transition-colors duration-200"
-            >
-              Login
-            </button>
-          </ng-template>
-        </div>
+            <path 
+              stroke-linecap="round" 
+              stroke-linejoin="round" 
+              stroke-width="2" 
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
+            />
+          </svg>
+        </button>
       </div>
     </div>
-  </nav>
+  </div>
+
+  <!-- Mobile menu -->
+  <div 
+    class="md:hidden" 
+    id="mobile-menu"
+    [class.hidden]="!isMobileMenuOpen"
+  >
+    <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+      <a 
+        routerLink="/patient/home"
+        routerLinkActive="bg-blue-50 text-blue-600"
+        class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-50 hover:text-blue-600"
+        (click)="closeMobileMenu()"
+      >
+        Home
+      </a>
+
+      <a 
+        routerLink="/patient/booking"
+        routerLinkActive="bg-blue-50 text-blue-600"
+        class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-50 hover:text-blue-600"
+        (click)="closeMobileMenu()"
+      >
+        Booking
+      </a>
+
+      <a 
+        routerLink="/patient/about"
+        routerLinkActive="bg-blue-50 text-blue-600"
+        class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-50 hover:text-blue-600"
+        (click)="closeMobileMenu()"
+      >
+        About
+      </a>
+
+      <a 
+        routerLink="/patient/appointments"
+        routerLinkActive="bg-blue-50 text-blue-600"
+        class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-50 hover:text-blue-600"
+        (click)="closeMobileMenu()"
+      >
+        Appointments
+      </a>
+
+      <!-- Profile Link for Mobile -->
+      <a 
+        routerLink="/patient/profile"
+        routerLinkActive="bg-blue-50 text-blue-600"
+        class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-50 hover:text-blue-600"
+        (click)="closeMobileMenu()"
+      >
+        Profile
+      </a>
+
+      <div class="pt-2 border-t border-gray-200">
+        <button
+          (click)="onLogout(); closeMobileMenu()"
+          class="flex items-center gap-2 w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-red-50 hover:text-red-700"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            class="h-5 w-5" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              stroke-linecap="round" 
+              stroke-linejoin="round" 
+              stroke-width="2" 
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
+            />
+          </svg>
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

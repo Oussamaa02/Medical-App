@@ -39,7 +39,7 @@
     <form *ngIf="selectedRole=='patient'" [formGroup]="patientRegisterForm" (ngSubmit)="onSubmitPatient()" class="flex flex-col gap-3">
       <div *ngIf="error" class="text-red-500">{{ error }}</div>
       <div *ngIf="patientRegisterForm.get('age')?.invalid && patientRegisterForm.get('age')?.touched" class="text-red-500 text-sm">
-        Age is required and must be a positive number.
+        Enter a valid age.
       </div>
       <input type="text" formControlName="firstName" placeholder="First Name" class="p-2 border text-black rounded-md border-gray-300" />
       <input type="text" formControlName="lastName" placeholder="Last Name" class="p-2 border text-black rounded-md border-gray-300" />
@@ -69,11 +69,59 @@
       <input type="password" formControlName="password" placeholder="Password" class="p-2 border text-black rounded-md border-gray-300" />
       <input type="tel" formControlName="phoneNumber" placeholder="Phone Number" class="p-2 border text-black rounded-md border-gray-300" />
       <input type="text" formControlName="licenseNumber" placeholder="License Number" class="p-2 border text-black rounded-md border-gray-300" />
-      <input type="text" formControlName="speciality" placeholder="Speciality" class="p-2 border text-black rounded-md border-gray-300" />
+      <select 
+      required
+        class="p-2 border text-black rounded-md border-gray-300 w-full"
+        formControlName="speciality"
+      >
+        <option value="" disabled >Select Specialization</option>
+        <option value="Dentist">Dentist</option>
+        <option value="Orthodontist">Orthodontist</option>
+        <option value="Radiologist">Radiologist</option>
+        <option value="Psychiatrist">Psychiatrist</option>
+        <option value="Physiatrist">Physiatrist</option>
+        <option value="Pediatrician">Pediatrician</option>
+        <option value="Gynecologist">Gynecologist</option>
+        <option value="Neurologist">Neurologist</option>
+        <option value="Dermatologist">Dermatologist</option>
+        <option value="Cardiologist">Cardiologist</option>
+        <option value="General Practitioner">General Practitioner</option>
+        <option value="Plastic Surgeon">Plastic Surgeon</option>
+        <option value="General Surgeon">General Surgeon</option>
+      </select>
       <input type="text" formControlName="address" placeholder="Address" class="p-2 border text-black rounded-md border-gray-300" />
-      <input type="text" formControlName="city" placeholder="City" class="p-2 border text-black rounded-md border-gray-300" />
+      <select 
+      class="p-2 border text-black rounded-md border-gray-300 w-full"
+      formControlName="city"
+      required
+      >
+      <option value="" disabled >Select City</option>
+      <option value="Tunis">Tunis</option>
+      <option value="Sfax">Sfax</option>
+      <option value="Sousse">Sousse</option>
+      <option value="Kairouan">Kairouan</option>
+      <option value="Bizerte">Bizerte</option>
+      <option value="Gabès">Gabès</option>
+      <option value="Ariana">L'Ariana</option>
+      <option value="Gafsa">Gafsa</option>
+      <option value="Nabeul">Nabeul</option>
+      <option value="Ben Arous">Ben Arous</option>
+      <option value="Monastir">Monastir</option>
+      <option value="Médenine">Médenine</option>
+      <option value="Kébili">Kébili</option>
+      <option value="Tataouine">Tataouine</option>
+      <option value="Tozeur">Tozeur</option>
+      <option value="Béja">Béja</option>
+      <option value="Jendouba">Jendouba</option>
+      <option value="Kasserine">Kasserine</option>
+      <option value="Le Kef">Le Kef</option>
+      <option value="Mahdia">Mahdia</option>
+      <option value="Manouba">La Manouba</option>
+      <option value="Sidi Bouzid">Sidi Bouzid</option>
+      <option value="Siliana">Siliana</option>
+      <option value="Zaghouan">Zaghouan</option>
+      </select>
       <input type="text" formControlName="zipCode" placeholder="Zip Code" class="p-2 border text-black rounded-md border-gray-300" />
-
       <button type="submit" class="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
         Sign Up
       </button>

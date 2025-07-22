@@ -1,53 +1,78 @@
-<div class="flex flex-col-reverse lg:flex-row  max-w-7xl mx-auto ">
-  <div class="w-full  ">
-    <full-calendar [options]="calendarOptions"></full-calendar>
+<div class="flex flex-col lg:flex-row  max-w-7xl mx-auto ">
+  <!-- Calendar Section -->
+  <div class="w-full lg:w-2/3 bg-white overflow-hidden">
+    <full-calendar [options]="calendarOptions" class="p-4"></full-calendar>
   </div>
-  
-  <!-- Time slots -->
-  <div 
-    *ngIf="selectedDate"
-    class="w-full max-w-md mx-auto mt-4 bg-white p-4 rounded-lg shadow"
-  >
-    <h2 class="text-md font-semibold mb-3">
-      Available Times on <span class="text-blue-600">{{ selectedDate }}</span>
-    </h2>
-    
-    <div class="grid grid-cols-3 gap-2">
-      <button
-        *ngFor="let time of availableTimeSlots"
-        (click)="selectTime(time)"
-        [class]="'text-sm px-3 py-1 rounded border transition ' + 
-                 (isTimeSelected(time) ? 'bg-blue-600 text-white' : 'hover:bg-blue-100') + 
-                 (isTimeBooked(time) ? ' bg-gray-200 border-gray-200 text-gray-400 cursor-not-allowed' : '')"
-        [disabled]="isTimeBooked(time)"
-      >
-        {{ time }}
-      </button>
-    </div>
-  
-    <div class="mt-4 text-center flex justify-center gap-3">
-      <button
-        [disabled]="!selectedTime"
-        (click)="handleConfirm()"
-        [class]="'px-4 py-2 rounded text-white text-sm transition ' + 
-                 (selectedTime ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed')"
-      >
-        Confirm
-      </button>
-  
-      <button
-        (click)="handleCancel()"
-        class="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200"
-      >
-        Cancel
-      </button>
-    </div>
-  </div>
-  
-  <!-- Smart Assessment -->
-  <app-smart-assessment 
-    *ngIf="showSmartAssessment"
-    (cancelEvent)="showSmartAssessment = false"
-  ></app-smart-assessment>
 
+  <!-- Time Slots Panel -->
+  <div *ngIf="selectedDate" class="w-full lg:w-1/3">
+    <div class="bg-white  overflow-hidden">
+      <div class="p-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex flex-col">
+          <h2 class="text-lg font-semibold text-gray-800">
+            Available Times for
+          </h2>
+          <p class="text-blue-600">
+            {{ selectedDate | date:'mediumDate' }}
+          </p>
+          </div>
+          <button (click)="handleCancel()" class="text-gray-400 hover:text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Loading/Error States -->
+        <div *ngIf="loading" class="flex justify-center py-8">
+          <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+        
+        <div *ngIf="error" class="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+          {{ error }}
+        </div>
+
+        <!-- Time Slots Grid -->
+        <div *ngIf="!loading && availableTimeSlots.length > 0" class="space-y-2">
+          <p class="text-sm text-gray-600 mb-4">Select your preferred time:</p>
+          <div class="grid grid-cols-2 gap-3">
+            <button
+              *ngFor="let t of availableTimeSlots"
+              (click)="selectTime(t.startTime)"
+              [disabled]="isTimeBooked(t.startTime)"
+              class="text-sm px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center font-medium"
+              [ngClass]="{
+                'bg-blue-600 text-white border-2 border-blue-600 shadow-md transform scale-105': selectedTime === t.startTime,
+                'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed': isTimeBooked(t.startTime),
+                'bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-300 text-gray-700': !isTimeBooked(t.startTime) && selectedTime !== t.startTime
+              }"
+            >
+              {{ formatTime(t.startTime) }}
+            </button>
+          </div>
+
+          <!-- Selected time indicator -->
+          <div *ngIf="selectedTime" class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div class="flex items-center text-blue-700">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="text-sm font-medium">Selected: {{ formatTime(selectedTime) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!loading && availableTimeSlots.length === 0" class="text-center py-8">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p class="text-gray-500 font-medium">No available time slots</p>
+          <p class="text-gray-400 text-sm mt-1">Please select a different date</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

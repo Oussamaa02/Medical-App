@@ -2,35 +2,32 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CalendarOptions, DateSelectArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-// import { AppointmentService } from '../../services/appointment.service';
-import { CommonModule } from '@angular/common';
+import { PatientService } from '../../services/patient.service';
+import { TimeSlotDto } from '../../../models/time-slot-dto.model';
 import { FullCalendarModule } from '@fullcalendar/angular';
-import { SmartAssessmentComponent } from '../smart-assessment/smart-assessment.component';
+import { CommonModule } from '@angular/common';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-calendar',
-  standalone: true,
-  imports: [CommonModule, FullCalendarModule, SmartAssessmentComponent],
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.css']
+  styleUrls: ['./calendar.component.css'],
+  standalone: true,
+  imports: [CommonModule, FullCalendarModule],
 })
-
-//⚠️ after adding the appointment services make it export class CalendarComponent implements OnInit 
-export class CalendarComponent {
-  @Input() onConfirm!: (date: string, time: string) => void;
-  @Input() onCancel?: () => void;
-  @Output() confirmEvent = new EventEmitter<{date: string, time: string}>();
+export class CalendarComponent implements OnInit {
+  @Input() doctorId!: number;
+  @Output() confirmEvent = new EventEmitter<{ date: string; time: string }>();
   @Output() cancelEvent = new EventEmitter<void>();
+  @Output() dateSelected = new EventEmitter<string>();
+  @Output() timeSelected = new EventEmitter<string>();
 
   selectedDate: string | null = null;
   selectedTime: string | null = null;
-  showSmartAssessment = false;
+  availableTimeSlots: TimeSlotDto[] = [];
   bookedTimes: string[] = [];
-
-  availableTimeSlots = [
-    "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-    "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-  ];
+  error: string | null = null;
+  loading = false;
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
@@ -38,70 +35,99 @@ export class CalendarComponent {
     selectable: true,
     editable: false,
     dateClick: this.handleDateClick.bind(this),
-    events: '/api/calendar/slots',
     validRange: {
-      start: new Date().toISOString().split('T')[0]
+      start: new Date().toISOString().split('T')[0],
     }
   };
 
-  // constructor(private appointmentService: AppointmentService) {}
+  constructor(private patientService: PatientService) {}
 
-  // ngOnInit(): void {
-  //   this.fetchBookedTimes();
-  // }
+  ngOnInit(): void {
+    this.loadAppointments();
+  }
 
-  // async fetchBookedTimes(): Promise<void> {
-  //   try {
-  //     this.appointmentService.getCalendarSlots().subscribe(events => {
-  //       this.bookedTimes = events.map(event => 
-  //         event.start.split('T')[1].slice(0, 5)
-  //       );
-  //     });
-  //   } catch (error) {
-  //     console.error('Error fetching booked times:', error);
-  //   }
-  // }
+  loadAppointments() {
+    this.loading = true;
+  
+    const booked$ = this.patientService.getBookedAppointments();
+    const rescheduled$ = this.patientService.getRescheduledAppointments();
+  
+    forkJoin([booked$, rescheduled$]).subscribe({
+      next: ([booked, rescheduled]) => {
+        const all = [...booked, ...rescheduled];
+        this.bookedTimes = all.map(a => `${a.date}T${a.time}`);
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Failed to load booked appointments.';
+        this.loading = false;
+      }
+    });
+  }
+  
+
+  handleCancel(): void {
+    this.cancelEvent.emit();
+    this.selectedDate = null;
+    this.selectedTime = null;
+    this.dateSelected.emit('');
+    this.timeSelected.emit('');
+  }
 
   handleDateClick(arg: any): void {
     const today = new Date().toISOString().split('T')[0];
     if (arg.dateStr < today) return;
-    
+
     this.selectedDate = arg.dateStr;
     this.selectedTime = null;
+    
+    this.dateSelected.emit(this.selectedDate || '');
+    this.timeSelected.emit('');
+    
+    this.fetchAvailableTimes();
   }
 
+  fetchAvailableTimes(): void {
+    if (!this.selectedDate) return;
+
+    this.loading = true;
+    this.error = null;
+    this.patientService.findDoctorAvailableTimes(this.doctorId, this.selectedDate).subscribe({
+      next: slots => {
+        this.availableTimeSlots = slots.sort((a, b) => {
+          return a.startTime.localeCompare(b.startTime);
+        });
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Failed to load available time slots';
+        this.loading = false;
+      }
+    });
+  }
+ 
+
   selectTime(time: string): void {
-    if (!this.bookedTimes.includes(time)) {
+    const key = `${this.selectedDate}T${time}`;
+    if (!this.bookedTimes.includes(key)) {
       this.selectedTime = time;
+      this.timeSelected.emit(time);
+      console.log('Time selected:', time); 
     }
   }
 
   handleConfirm(): void {
     if (this.selectedDate && this.selectedTime) {
-      const fullDateTime = `${this.selectedDate}T${this.selectedTime}:00`;
-      console.log('Booking appointment at:', fullDateTime);
-      
-      this.confirmEvent.emit({
-        date: this.selectedDate,
-        time: this.selectedTime
-      });
-      
-      this.selectedDate = null;
-      this.selectedTime = null;
-      this.showSmartAssessment = true;
+      this.confirmEvent.emit({ date: this.selectedDate, time: this.selectedTime });
     }
   }
 
-  handleCancel(): void {
-    this.cancelEvent.emit();
-    this.selectedDate = null;
-  }
-
   isTimeBooked(time: string): boolean {
-    return this.bookedTimes.includes(time);
+    const key = `${this.selectedDate}T${time}`;
+    return this.bookedTimes.includes(key);
   }
 
-  isTimeSelected(time: string): boolean {
-    return this.selectedTime === time;
+  formatTime(time: string): string {
+    return time.substring(0, 5);
   }
 }

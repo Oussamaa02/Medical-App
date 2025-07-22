@@ -35,14 +35,11 @@ export class PatientValidationComponent implements OnInit {
     });
   }
 
-  showNotification = false;
-
   removePatient(email: string): void {
-    this.adminService.removeUser(email).subscribe({
-      next: () => {this.showNotification = true;
-        setTimeout(() => {
-          this.showNotification = false;
-        }, 4000);},
+    this.adminService.removePatient(email).subscribe({
+      next: () => {
+        window.location.reload();
+      },
       error: (err) => console.error('Cannot delete patient', err)
     });
   }

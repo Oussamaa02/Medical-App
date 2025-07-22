@@ -9,8 +9,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { AppComponent } from './app.component';
-import { HomeComponent } from './patient/pages/home/home.component';
+
 // import { AppointmentsComponent } from './pages/appointments/appointments.component';
 
 
@@ -22,12 +21,14 @@ import { LoginComponent } from './pages/auth/login/login.component';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { NgChartsModule } from 'ng2-charts';
 
 
 @NgModule({
   declarations: [
   ],
   imports: [
+    NgChartsModule ,
     MatSnackBarModule,
     RegisterComponent,
     LoginComponent,

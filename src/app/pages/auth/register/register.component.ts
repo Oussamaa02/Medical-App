@@ -22,8 +22,8 @@ export class RegisterComponent {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
+      password: ['', Validators.required, Validators.minLength(6)],
+      phoneNumber: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]],
       licenseNumber: ['', Validators.required],
       speciality: ['', Validators.required],
       address: ['', Validators.required],
@@ -35,9 +35,9 @@ export class RegisterComponent {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
-      age: ['', [Validators.required, Validators.min(0)]],
+      password: ['', Validators.required, Validators.minLength(6)],
+      phoneNumber: ['', Validators.required, Validators.minLength(8), Validators.maxLength(8)],
+      age: ['', [Validators.required, Validators.min(0), Validators.max(110)]],
       gender: ['', Validators.required],
     
 
@@ -62,7 +62,8 @@ export class RegisterComponent {
       next: () => {this.showNotification = true;
         setTimeout(() => {
           this.showNotification = false;
-        }, 4000);},
+        }, 4000);
+      },
       error: (err) => {
         if (err.status === 403 || err.error?.message?.includes('Email')) {
           this.showError = true;

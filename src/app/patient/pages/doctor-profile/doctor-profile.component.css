@@ -1,0 +1,55 @@
+/* Add any custom styles here if needed */
+
+/* Animation for the avatar */
+.avatar {
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .contact-info {
+      margin-top: 1.5rem;
+    }
+  }
+
+
+  /* Add this to your doctor-profile.component.css or global styles */
+
+/* Map container styling */
+.map-section {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Prevent map from interfering with page layout */
+.map-wrapper {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+}
+
+/* Fix for Tailwind CSS conflicts with Leaflet */
+.leaflet-container {
+  font-family: inherit !important;
+}
+
+.leaflet-container a {
+  color: inherit !important;
+}
+
+/* Ensure map tiles load properly */
+.leaflet-tile-pane {
+  filter: none !important;
+}
+
+/* Fix for touch devices */
+.leaflet-container {
+  -webkit-tap-highlight-color: transparent;
+}

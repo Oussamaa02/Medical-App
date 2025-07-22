@@ -1,14 +1,18 @@
 .navbar-logo {
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  .navbar-logo:hover {
-    transform: scale(1.05);
-  }
-  
-  /* Mobile responsive adjustments */
-  @media (max-width: 768px) {
-    .navbar-brand {
-      font-size: 1.2rem;
-    }
-  }
+  transition: transform 0.2s ease-in-out;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.05);
+}
+
+/* Better mobile menu transitions */
+#mobile-menu {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Active state for mobile links */
+.router-link-active {
+  background-color: #ebf8ff; /* Tailwind's bg-blue-50 */
+  color: #3182ce; /* Tailwind's text-blue-600 */
+}

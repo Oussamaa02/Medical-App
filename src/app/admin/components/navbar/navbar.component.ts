@@ -37,4 +37,16 @@ export class NavbarComponent implements OnInit {
   navigateToPatients(): void {
     this.router.navigate(['/admin/patients']);
   }
+  
+  navigateToAppointments(): void {
+    this.router.navigate(['/admin/appointments']); 
+  }
+
+  navigateToProfile(): void {
+    this.router.navigate(['/admin/profile']);
+  }
+
+  navigateToHome(): void {
+    this.router.navigate(['/admin/home']);
+  }
 }

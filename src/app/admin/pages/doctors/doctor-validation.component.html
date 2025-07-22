@@ -1,6 +1,6 @@
 <div class="p-6 bg-white rounded-xl shadow-sm">
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-semibold text-gray-800">Doctor Validation Queue</h2>
+    <div class="flex justify-between items-center mb-6 flex-col gap-5 md:flex-row">
+      <h2 class="md:text-2xl text-xl font-semibold text-gray-800">Doctor Validation Queue</h2>
       <div class="relative">
         <input 
           type="text" 
@@ -76,7 +76,7 @@
               <!-- (click)="rejectDoctor(doctor.id)" -->
 
               <ng-container *ngIf="!doctor.isValidated; else approvedTemplate">
-                <ng-container *ngIf="pendingMap[doctor.email]; else approveButtons">
+                <ng-container *ngIf="doctor.isPending; else approveButtons">
                   <button
                     class="px-4 py-1.5 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
                     disabled
@@ -93,20 +93,27 @@
                     Approve
                   </button>
                   <button
-                    class="px-4 py-1.5 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                    (click)="removeDoctor(doctor.email)"
+                    class="px-4 py-1.5 ml-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
                   >
                     Reject
                   </button>
                 </ng-template>
               </ng-container>
               
-              <ng-template #approvedTemplate>
+              <ng-template  #approvedTemplate>
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                   <svg class="-ml-1 mr-1.5 h-2 w-2 text-green-500" fill="currentColor" viewBox="0 0 8 8">
                     <circle cx="4" cy="4" r="3" />
                   </svg>
                   Approved
                 </span>
+                <button
+                (click)="removeDoctor(doctor.email)"
+                class="px-4 py-1.5 ml-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+              >
+                Remove
+              </button>
               </ng-template>
               
             </td>

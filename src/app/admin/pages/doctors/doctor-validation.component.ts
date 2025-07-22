@@ -1,22 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../../services/admin.service';
 import { CommonModule } from '@angular/common';
+import { Doctor } from '../../../models/doctor-dto';
 
-interface Doctor {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  speciality: string;
-  licenseNumber: string;
-  location: Location;
-  isValidated: boolean;
-}
-interface Location {
-  city: string;
-  address: string;
-  zipCode: string;
-}
+
 
 @Component({
   selector: 'app-doctor-validation',
@@ -26,14 +13,12 @@ interface Location {
 })
 export class DoctorValidationComponent implements OnInit {
   doctors: Doctor[] = [];
-  pendingMap: { [email: string]: boolean } = {}; 
 
   constructor(private adminService: AdminService) {}
 
   ngOnInit(): void {
     this.loadDoctors();
-    const saved = localStorage.getItem('pendingMap');
-    this.pendingMap = saved ? JSON.parse(saved) : {};
+    
   }
 
   loadDoctors(): void {
@@ -45,18 +30,22 @@ export class DoctorValidationComponent implements OnInit {
     });
   }
 
-
+  removeDoctor(email: string): void {
+    this.adminService.removeDoctor(email).subscribe({
+      next: () => {
+        window.location.reload();
+      },
+      error: (err) => console.error('Error removing doctor:', err),
+    });
+  }
 
   validateDoctor(email: string): void {
-    this.pendingMap[email] = true;
-    localStorage.setItem('pendingMap', JSON.stringify(this.pendingMap));
-
-    this.adminService.validateUser(email).subscribe({
+    this.adminService.validateDoctor(email).subscribe({
       next: () => {
+        window.location.reload();
       },
       error: (err) => {
         console.error('Validation failed:', err);
-        this.pendingMap[email] = false;
       }
     });
   }

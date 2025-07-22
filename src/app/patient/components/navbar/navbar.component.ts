@@ -34,9 +34,30 @@ export class NavbarComponent implements OnInit {
     this.router.navigate(['/patient/home']); 
   }
   navigateToAppointments(): void {
-    this.router.navigate(['/patient/appointment']); 
+    this.router.navigate(['/patient/appointments']); 
   }
   navigateToAbout(): void {
     this.router.navigate(['/patient/about']);
   }
+
+  navigateToBooking(): void {
+    this.router.navigate(['/patient/booking']);
+  }
+
+  // Add to your component class
+isMobileMenuOpen = false;
+
+toggleMobileMenu(): void {
+  this.isMobileMenuOpen = !this.isMobileMenuOpen;
+}
+
+closeMobileMenu(): void {
+  this.isMobileMenuOpen = false;
+}
+
+navigateToProfile() {
+  this.router.navigate(['/patient/profile']);
+  this.closeMobileMenu();
+}
+
 }
